@@ -3,6 +3,7 @@
 Extensible JOSE library for Scala.
 
 > Not yet implemented:  
+> * JWK serialization
 > * JWE
 > * RSA
 > * Less common key sizes for ECDSA

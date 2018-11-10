@@ -12,6 +12,12 @@ Extensible JOSE library for Scala.
 > * Less common key sizes for ECDSA
 > * Custom parameters
 
+## Installation
+Add the below to your `build.sbt` (replace the value after the pound with the desired version)
+```scala
+dependsOn(RootProject(uri("git://github.com/blackdoor/jose.git#0.1.0")))
+```
+
 ## Usage
 
 Pretty simple: make a key, make something to sign, sign it.

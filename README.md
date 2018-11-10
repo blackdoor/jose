@@ -1,7 +1,7 @@
 # jose
 
-![Code Coverage](https://codecov.io/gh/blackdoor-specialteams/jose/branch/master/graph/badge.svg)
-[![Build Status](https://travis-ci.com/blackdoor-specialteams/jose.svg?branch=master)](https://travis-ci.com/blackdoor-specialteams/jose)
+[![Codecov](https://img.shields.io/codecov/c/github/blackdoor/jose.svg?style=flat-square)](https://codecov.io/gh/blackdoor/jose)
+[![Travis (.com)](https://img.shields.io/travis/com/blackdoor/jose.svg?style=flat-square)](https://travis-ci.com/blackdoor/jose)
 
 Extensible JOSE library for Scala.
 

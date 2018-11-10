@@ -1,4 +1,4 @@
-package pkg.jwt
+package black.door.jose.jwt
 
 import java.time.{Clock, Instant}
 

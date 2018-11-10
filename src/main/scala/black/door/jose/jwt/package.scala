@@ -1,4 +1,4 @@
-package pkg
+package black.door.jose
 
 import scala.concurrent.Future
 

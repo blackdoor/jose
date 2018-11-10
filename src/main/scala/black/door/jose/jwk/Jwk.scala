@@ -1,4 +1,4 @@
-package pkg.jwk
+package black.door.jose.jwk
 
 trait Jwk {
   def kty: String

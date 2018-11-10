@@ -1,11 +1,11 @@
-package pkg.jws
+package black.door.jose.jws
 
 
 import com.nimbusds.jose.crypto.{MACSigner, MACVerifier}
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader, JWSObject, Payload}
 import org.scalatest.{EitherValues, Matchers, WordSpec}
-import pkg.Json._
-import pkg.jwk.HsJwk
+import black.door.jose.Json._
+import black.door.jose.jwk.HsJwk
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -1,4 +1,4 @@
-package pkg.adopted
+package black.door.jose.adopted
 
 import java.security.SignatureException
 

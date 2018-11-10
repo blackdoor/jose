@@ -1,8 +1,8 @@
-package pkg.jws
+package black.door.jose.jws
 
 import cats.data.EitherT
 import cats.implicits._
-import pkg.jwk.Jwk
+import black.door.jose.jwk.Jwk
 
 import scala.concurrent.{ExecutionContext, Future}
 

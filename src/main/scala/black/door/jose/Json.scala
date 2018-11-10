@@ -1,10 +1,10 @@
-package pkg
+package black.door.jose
 
 import java.nio.charset.StandardCharsets
 
-import pkg.jwk.Jwk
-import pkg.jws.JwsHeader
-import pkg.jwt.Claims
+import black.door.jose.jwk.Jwk
+import black.door.jose.jws.JwsHeader
+import black.door.jose.jwt.Claims
 import play.api.libs.json.{Reads, Writes, Json => PJson}
 
 import scala.util.Try

@@ -1,4 +1,4 @@
-package pkg.jwk
+package black.door.jose.jwk
 
 import java.math.BigInteger
 import java.security.interfaces.{ECPrivateKey => jECPrivateKey, ECPublicKey => jECPublicKey}

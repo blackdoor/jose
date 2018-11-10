@@ -1,12 +1,12 @@
-package pkg.jws
+package black.door.jose.jws
 
 import java.nio.charset.StandardCharsets
 import java.security.KeyException
 
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import pkg.adopted.DerTools
-import pkg.jwk.{HsJwk, JavaEcPrivateKey, SymmetricJwk}
+import black.door.jose.adopted.DerTools
+import black.door.jose.jwk.{HsJwk, JavaEcPrivateKey, SymmetricJwk}
 
 object InputSigner {
 

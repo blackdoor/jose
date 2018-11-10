@@ -1,4 +1,4 @@
-package pkg.jwt
+package black.door.jose.jwt
 
 import java.time.Instant
 import java.util.Base64
@@ -8,8 +8,8 @@ import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
 import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
 import org.scalatest.{FlatSpec, Matchers}
-import pkg.Json._
-import pkg.jwk.JavaP256KeyPair
+import black.door.jose.Json._
+import black.door.jose.jwk.JavaP256KeyPair
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,7 +19,7 @@ class JwtSpec extends FlatSpec with Matchers {
 
   def generateToken = {
     val claims = Claims(jti = Some("test token id"))
-    Jwt.sign(es256Key, claims)
+    Jwt.sign(claims, es256Key)
   }
 
   "JWT signing" should "trim base64url padding" in {
@@ -32,7 +32,7 @@ class JwtSpec extends FlatSpec with Matchers {
 
   it should "sign with ES256" in {
     val claims = Claims(jti = Some("test token id"))
-    val compact = Jwt.sign(es256Key, claims)
+    val compact = Jwt.sign(claims, es256Key)
 
     val encoder = Base64.getUrlEncoder
     val nimbusJwk = ECKey.parse(s"""{"kty":"EC","crv":"P-256","x":"${encoder.encodeToString(es256Key.x.toByteArray)}","y":"${encoder.encodeToString(es256Key.y.toByteArray)}"}""")
@@ -58,13 +58,13 @@ class JwtSpec extends FlatSpec with Matchers {
 
   it should "fail for tokens before the nbf value" in {
     val claims = Claims(nbf = Some(Instant.now.plusSeconds(60)))
-    val compact = Jwt.sign(es256Key, claims)
+    val compact = Jwt.sign(claims, es256Key)
     Jwt.validateSync(compact, es256Key) shouldBe 'left
   }
 
   it should "fail for tokens after the exp value" in {
     val claims = Claims(exp = Some(Instant.now.minusSeconds(60)))
-    val compact = Jwt.sign(es256Key, claims)
+    val compact = Jwt.sign(claims, es256Key)
     Jwt.validateSync(compact, es256Key) shouldBe 'left
   }
 
@@ -87,7 +87,7 @@ class JwtSpec extends FlatSpec with Matchers {
       aud = Some("aud"),
       sub = Some("sub")
     )
-    val compact = Jwt.sign(es256Key, claims)
+    val compact = Jwt.sign(claims, es256Key)
     Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
   }
 
@@ -97,7 +97,7 @@ class JwtSpec extends FlatSpec with Matchers {
       aud = Some("miss"),
       sub = Some("sub")
     )
-    val compact = Jwt.sign(es256Key, claims)
+    val compact = Jwt.sign(claims, es256Key)
     Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
   }
 
@@ -107,7 +107,7 @@ class JwtSpec extends FlatSpec with Matchers {
       aud = Some("aud"),
       sub = Some("miss")
     )
-    val compact = Jwt.sign(es256Key, claims)
+    val compact = Jwt.sign(claims, es256Key)
     Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
   }
 }

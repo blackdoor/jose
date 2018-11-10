@@ -1,6 +1,6 @@
-package pkg
+package black.door.jose
 
-import pkg.jwk._
+import black.door.jose.jwk._
 
 package object jws {
 

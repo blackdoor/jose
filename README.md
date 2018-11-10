@@ -16,7 +16,7 @@ Pretty simple: make a key, make something to sign, sign it.
 val claims = Claims(sub = Some("my user"), iss = Some("me"), exp = Some(Instant.now.plus(1, ChronoUnit.DAYS)))
 val key = JavaP256KeyPair.generate
 
-val compactToken = Jwt.sign(key, claims)
+val compactToken = Jwt.sign(claims, key)
 
 val errorOrJwt = Jwt.validateSync(compactToken, key, Check.iss("me").orElse(JwtValidator.defaultValidator))
 errorOrJwt.right.get.claims.sub // Some(my user)
@@ -24,9 +24,8 @@ errorOrJwt.right.get.claims.sub // Some(my user)
 
 ### Selecting a JSON implementation
 
-Work in progress, currently just `import pkg.Json._`  
-Later on the `Mapper` implicits for each json library will be in separate projects so that you can select one without 
-pulling in dependencies for the others.
+Work in progress, currently just `import black.door.jose.Json._` for Play JSON support.  
+Implement `Mapper` implicits to add support for new libraries.
 
 ### Async key resolution and validation checks
 

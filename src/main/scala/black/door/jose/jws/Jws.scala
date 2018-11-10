@@ -1,11 +1,11 @@
-package pkg.jws
+package black.door.jose.jws
 
 import java.util.Base64
 
 import cats.data.EitherT
 import cats.implicits._
-import pkg.Mapper
-import pkg.jwk.Jwk
+import black.door.jose.Mapper
+import black.door.jose.jwk.Jwk
 
 import scala.collection.immutable.Seq
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,4 +1,4 @@
-package pkg.jws
+package black.door.jose.jws
 
 import java.nio.charset.StandardCharsets
 import java.security.KeyException
@@ -6,8 +6,8 @@ import java.util
 
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import pkg.adopted.DerTools
-import pkg.jwk.{HsJwk, JavaEcPublicKey, SymmetricJwk}
+import black.door.jose.adopted.DerTools
+import black.door.jose.jwk.{HsJwk, JavaEcPublicKey, SymmetricJwk}
 
 object SignatureValidator {
   val keyHeaderPreValidator: SignatureValidator = {

@@ -110,4 +110,31 @@ class JwtSpec extends FlatSpec with Matchers {
     val compact = Jwt.sign(claims, es256Key)
     Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
   }
+
+  it should "fail for missing iss value" in {
+    val claims = Claims(
+      aud = Some("aud"),
+      sub = Some("sub")
+    )
+    val compact = Jwt.sign(claims, es256Key)
+    Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
+  }
+
+  it should "fail for missing aud value" in {
+    val claims = Claims(
+      iss = Some("iss"),
+      sub = Some("sub")
+    )
+    val compact = Jwt.sign(claims, es256Key)
+    Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
+  }
+
+  it should "fail for missing sub value" in {
+    val claims = Claims(
+      iss = Some("iss"),
+      aud = Some("aud")
+    )
+    val compact = Jwt.sign(claims, es256Key)
+    Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
+  }
 }

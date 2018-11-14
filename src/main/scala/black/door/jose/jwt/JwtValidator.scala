@@ -27,11 +27,11 @@ object JwtValidator {
 }
 
 trait Check {
-  def iss(check: String => Boolean) =
-    JwtValidator.fromSync { case jwt if !jwt.claims.iss.exists(check) => "Issuer invalid"}
-  def sub(check: String => Boolean) =
-    JwtValidator.fromSync { case jwt if !jwt.claims.sub.exists(check) => "Subject invalid"}
-  def aud(check: String => Boolean) =
-    JwtValidator.fromSync { case jwt if !jwt.claims.aud.exists(check) => "Audience invalid"}
+  def iss(check: String => Boolean, required: Boolean = true) =
+    JwtValidator.fromSync { case jwt if !jwt.claims.iss.exists(check) || (required && jwt.claims.iss.isEmpty) => "Issuer invalid" }
+  def sub(check: String => Boolean, required: Boolean = true) =
+    JwtValidator.fromSync { case jwt if !jwt.claims.sub.exists(check) || (required && jwt.claims.sub.isEmpty) => "Subject invalid" }
+  def aud(check: String => Boolean, required: Boolean = true) =
+    JwtValidator.fromSync { case jwt if !jwt.claims.aud.exists(check) || (required && jwt.claims.aud.isEmpty) => "Audience invalid" }
 }
 object Check extends Check

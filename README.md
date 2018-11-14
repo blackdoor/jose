@@ -2,6 +2,7 @@
 
 [![Codecov](https://img.shields.io/codecov/c/github/blackdoor/jose.svg?style=flat-square)](https://codecov.io/gh/blackdoor/jose)
 [![Travis (.com)](https://img.shields.io/travis/com/blackdoor/jose.svg?style=flat-square)](https://travis-ci.com/blackdoor/jose)
+[![Scaladoc](https://img.shields.io/badge/scaladoc-latest-blue.svg?style=flat-square)](https://blackdoor.github.io/jose/api/latest/black/door/jose/index.html)
 
 Extensible JOSE library for Scala.
 

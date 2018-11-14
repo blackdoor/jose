@@ -12,6 +12,4 @@ libraryDependencies += "com.nimbusds" % "nimbus-jose-jwt" % "6.0" % Test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % Test
 
 enablePlugins(SiteScaladocPlugin)
-siteSubdirName in SiteScaladoc := "api/latest"
-enablePlugins(GhpagesPlugin)
-git.remoteRepo := "git@github.com:blackdoor/jose.git"
+siteSubdirName in SiteScaladoc := s"api/${sys.env.getOrElse("RELEASE_TAG", "latest")}"

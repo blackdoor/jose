@@ -5,3 +5,4 @@ scala:
 script:
   - sbt coverage test coverageReport
   - bash <(curl -s https://codecov.io/bash)
+  - ./ci/publish-docs.sh

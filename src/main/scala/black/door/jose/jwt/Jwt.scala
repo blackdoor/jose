@@ -26,7 +26,7 @@ object Jwt {
 
   def validate(
                    compact: String,
-                   keyResolver: KeyResolver,
+                   keyResolver: KeyResolver[Claims],
                    jwtValidator: JwtValidator = JwtValidator.defaultValidator(),
                    signatureValidator: SignatureValidator = SignatureValidator.javaSignatureValidator
                  )
@@ -45,7 +45,7 @@ object Jwt {
   private val sadSpasticLittleEc = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool)
 
   def validateSync(compact: String,
-                   keyResolver: KeyResolver,
+                   keyResolver: KeyResolver[Claims],
                    jwtValidator: JwtValidator = JwtValidator.defaultValidator(),
                    signatureValidator: SignatureValidator = SignatureValidator.javaSignatureValidator
                   )

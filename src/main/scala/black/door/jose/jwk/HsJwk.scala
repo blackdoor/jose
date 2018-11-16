@@ -24,8 +24,8 @@ trait HsJwk extends SymmetricJwk {
 abstract case class OctJwk(
                             k: Array[Byte],
                             alg: Option[String] = None,
-                  key_ops: Option[Seq[String]] = None,
-                  kid: Option[String] = None
+                            key_ops: Option[Seq[String]] = None,
+                            kid: Option[String] = None
                           ) extends SymmetricJwk
 
 object HsJwk {

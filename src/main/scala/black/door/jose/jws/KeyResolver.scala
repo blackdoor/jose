@@ -11,5 +11,5 @@ trait KeyResolver[A] {
 }
 object KeyResolver {
   implicit def fromSingleKey[A](key: Jwk)(implicit ex: ExecutionContext): KeyResolver[A] =
-    (header: JwsHeader, payload: A) => EitherT.rightT[Future, String](key)
+    _ => EitherT.rightT[Future, String](key)
 }

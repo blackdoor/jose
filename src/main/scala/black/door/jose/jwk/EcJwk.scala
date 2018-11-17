@@ -3,64 +3,76 @@ package black.door.jose.jwk
 import java.math.BigInteger
 import java.security.interfaces.{ECPrivateKey => jECPrivateKey, ECPublicKey => jECPublicKey}
 import java.security.spec._
-import java.security.{KeyFactory, KeyPairGenerator, SecureRandom, Signature}
+import java.security.{KeyFactory, KeyPairGenerator, SecureRandom}
 
 
-trait EcPublicKey extends Jwk {
+trait EcPublicKey extends PublicJwk {
   val kty = "EC"
   def crv: String
   def x: BigInt
   def y: BigInt
+
+  protected def spec: ECParameterSpec
+  lazy val toJcaPublicKey = {
+    val publicKeySpec = new ECPublicKeySpec(new ECPoint(x.bigInteger, y.bigInteger), spec)
+    val keyFactory = KeyFactory.getInstance("EC")
+    keyFactory.generatePublic(publicKeySpec).asInstanceOf[jECPublicKey]
+  }
 }
 
-trait EcPrivateKey extends Jwk {
+trait EcPrivateKey extends PrivateJwk {
   val kty = "EC"
   def d: BigInt
-}
 
-trait EcKeyPair extends EcPublicKey with EcPrivateKey {
-  override val kty = "EC"
-}
-
-trait JavaEcPublicKey extends EcPublicKey {
   protected def spec: ECParameterSpec
-  def javaSignature: Signature
-  lazy val toJavaPublicKey: jECPublicKey = JavaP256KeyPair.ecToJavaPublicKey(this, spec)
-}
-
-trait JavaEcPrivateKey extends EcPrivateKey {
-  protected def spec: ECParameterSpec
-  def javaSignature: Signature
-  lazy val toJavaPrivateKey: jECPrivateKey = {
+  lazy val toJcaPrivateKey: jECPrivateKey = {
     val privateKeySpec = new ECPrivateKeySpec(d.bigInteger, spec)
     val keyFactory = KeyFactory.getInstance("EC")
     keyFactory.generatePrivate(privateKeySpec).asInstanceOf[jECPrivateKey]
   }
 }
 
-case class JavaP256KeyPair(
+trait EcKeyPair extends EcPublicKey with EcPrivateKey {
+  override val kty = "EC"
+
+  // returns only the public key data from this pair
+  def toPublic: EcPublicKey
+}
+
+case class P256PublicKey(
+                          x: BigInt,
+                          y: BigInt,
+                          use: Option[String] = None,
+                          key_ops: Option[Seq[String]] = None,
+                          kid: Option[String] = None
+                        ) extends EcPublicKey {
+  val crv = "P-256"
+  val alg = Some("ES256")
+
+  def spec = P256KeyPair.P256ParameterSpec
+}
+
+case class P256KeyPair(
                             d: BigInt,
                             x: BigInt,
                             y: BigInt,
                             use: Option[String] = None,
                             key_ops: Option[Seq[String]] = None,
                             kid: Option[String] = None
-                          ) extends EcKeyPair with JavaEcPrivateKey with JavaEcPublicKey {
+                          ) extends EcKeyPair with EcPublicKey with EcPrivateKey {
   val crv = "P-256"
   val alg = Some("ES256")
 
-  def isValidFor(alg: String) = alg == "ES256"
-
-  def spec = JavaP256KeyPair.P256ParameterSpec
-  def javaSignature = Signature.getInstance("SHA256withECDSA")
+  lazy val toPublic = P256PublicKey(x, y, use, key_ops, kid)
+  def spec = P256KeyPair.P256ParameterSpec
 }
 
-object JavaP256KeyPair {
+object P256KeyPair {
   def generate = {
     val keyGen = KeyPairGenerator.getInstance("EC")
-    keyGen.initialize(256, new SecureRandom())
-    val pair = keyGen.generateKeyPair()
-    JavaP256KeyPair(
+    keyGen.initialize(256, new SecureRandom)
+    val pair = keyGen.generateKeyPair
+    P256KeyPair(
       pair.getPrivate.asInstanceOf[java.security.interfaces.ECPrivateKey].getS,
       pair.getPublic.asInstanceOf[java.security.interfaces.ECPublicKey].getW.getAffineX,
       pair.getPublic.asInstanceOf[java.security.interfaces.ECPublicKey].getW.getAffineY
@@ -80,11 +92,5 @@ object JavaP256KeyPair {
     new BigInteger("115792089210356248762697446949407573529996955224135760342422259061068512044369"),
     1
   )
-
-  def ecToJavaPublicKey(jwk: EcPublicKey, spec: ECParameterSpec) = {
-    val publicKeySpec = new ECPublicKeySpec(new ECPoint(jwk.x.bigInteger, jwk.y.bigInteger), spec)
-    val keyFactory = KeyFactory.getInstance("EC")
-    keyFactory.generatePublic(publicKeySpec).asInstanceOf[jECPublicKey]
-  }
 }
 

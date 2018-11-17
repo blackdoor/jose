@@ -1,12 +1,6 @@
 package black.door.jose.jws
 
-import java.nio.charset.StandardCharsets
 import java.security.KeyException
-
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
-import black.door.jose.adopted.DerTools
-import black.door.jose.jwk.{HsJwk, JavaEcPrivateKey, SymmetricJwk}
 
 object InputSigner {
 
@@ -15,21 +9,7 @@ object InputSigner {
       throw new KeyException("The JWK that was provided is not valid for the headers on the JWS")
     case (key, _, _) if !key.key_ops.forall(_.contains("sign")) =>
       throw new KeyException(s"The JWK that was provided is not valid for signature operations (only ${key.key_ops.get.mkString(",")})")
+    case (key, _, _) if key.use.exists(_ != "sig") =>
+      throw new KeyException(s"The JWK that was provided is not valid for signature use (only ${key.use.get})")
   }
-
-  val javaInputSigner: InputSigner =
-    {
-      case (key: JavaEcPrivateKey, _, signingInput) =>
-        val sig = key.javaSignature
-        val javaKey = key.toJavaPrivateKey
-        sig.initSign(javaKey)
-        sig.update(signingInput.getBytes(StandardCharsets.US_ASCII))
-        DerTools.transcodeSignatureToConcat(sig.sign(), javaKey.getParams.getCurve.getField.getFieldSize / 4)
-      case (key: SymmetricJwk, header, signingInput) =>
-        val algorithm = HsJwk.javaAlgorithm(header.alg)
-
-        val mac = Mac.getInstance(algorithm)
-        mac.init(new SecretKeySpec(key.k, algorithm))
-        mac.doFinal(signingInput.getBytes(StandardCharsets.US_ASCII))
-    }
 }

@@ -2,10 +2,12 @@ package black.door.jose.jws
 
 import java.util.Base64
 
+import black.door.jose.Mapper
+import black.door.jose.jwa.{SignatureAlgorithm, SignatureAlgorithms}
+import black.door.jose.jwk.Jwk
 import cats.data.EitherT
 import cats.implicits._
-import black.door.jose.Mapper
-import black.door.jose.jwk.Jwk
+import com.typesafe.scalalogging.Logger
 
 import scala.collection.immutable.Seq
 import scala.concurrent.{ExecutionContext, Future}
@@ -15,7 +17,9 @@ trait Jws[A] {
   def header: JwsHeader
   def payload: A
 
-  def sign(key: Jwk, signer: InputSigner = InputSigner.javaInputSigner)
+  private lazy val logger = Logger(classOf[Jws[A]])
+
+  def sign(key: Jwk, algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all)
           (
             implicit headerSerializer: Mapper[JwsHeader, Array[Byte]],
             payloadSerializer: Mapper[A, Array[Byte]]
@@ -24,15 +28,18 @@ trait Jws[A] {
     val Right(headerCompact) = headerSerializer(header).map(encoder.encodeToString)
     val Right(payloadCompact) = payloadSerializer(payload).map(encoder.encodeToString)
     val signingInput = s"$headerCompact.$payloadCompact"
-    InputSigner.keyHeaderPreSigner.orElse(signer)
-      .andThen(encoder.encodeToString)
-      .andThen(signature => s"$signingInput.$signature")(
-      (
-        key,
-        header,
-        signingInput
-      )
+    val signerTuple = (key, header, signingInput)
+    val definedAlgs = algorithms.filter(_.sign.isDefinedAt(signerTuple))
+
+    val oddAlgs = definedAlgs.filterNot(_.alg.toLowerCase == header.alg.toLowerCase)
+    if (oddAlgs.nonEmpty) logger.warn(
+      s"Signing algorithms ${oddAlgs.map(_.alg).mkString(", ")} " +
+      s"reported being applicable for ${header.alg}. This may indicate an improperly implemented SignatureAlgorithm."
     )
+
+    InputSigner.keyHeaderPreSigner.orElse(definedAlgs.map(_.sign).reduce(_ orElse _))
+      .andThen(encoder.encodeToString)
+      .andThen(signature => s"$signingInput.$signature")(signerTuple)
   }
 }
 
@@ -49,6 +56,8 @@ case class JwsHeader(
                     )
 
 object Jws {
+  private lazy val logger = Logger(Jws.getClass)
+
   def apply[A](header: JwsHeader, payload: A) = GenericJws(header, payload)
 
   // return (signingInput, header, payload, signature)
@@ -72,7 +81,7 @@ object Jws {
       signature <- Try(decoder.decode(signatureC)).toEither.left.map(_.getMessage)
     } yield (signingInput, header, payload, signature)
 
-  def validate[A](compact: String, keyResolver: KeyResolver[A], validator: SignatureValidator = SignatureValidator.javaSignatureValidator)
+  def validate[A](compact: String, keyResolver: KeyResolver[A], algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all)
                  (
                    implicit payloadDeserializer: Mapper[Array[Byte], A],
                    headerDeserializer: Mapper[Array[Byte], JwsHeader],
@@ -82,10 +91,24 @@ object Jws {
       tup <- EitherT.fromEither[Future](parse[A](compact))
       (signingInput, header, payload, signature) = tup
       key <- keyResolver.resolve(header, payload)
+      validatorTuple = (key, header, signingInput, signature)
+      definedAlgs = algorithms.filter(_.validate.isDefinedAt(validatorTuple))
+
+      _ = {
+        val oddAlgs = definedAlgs.filterNot(_.alg.toLowerCase == header.alg.toLowerCase)
+        if (oddAlgs.nonEmpty) logger.warn(
+          s"Signing algorithms ${oddAlgs.map(_.alg).mkString(", ")} " +
+          s"reported being applicable for ${header.alg}. This may indicate an improperly implemented SignatureAlgorithm."
+        )
+      }
+
       jws <- EitherT.fromOption[Future](
-        SignatureValidator.keyHeaderPreValidator.orElse(validator)
+        SignatureValidator.keyHeaderPreValidator.orElse(definedAlgs.map(_.validate).reduce(_ orElse _))
           .andThen(if(_) None else Some("Signature was invalid"))
-          .applyOrElse[(Jwk, JwsHeader, String, Array[Byte]), Option[String]]((key, header, signingInput, signature), _ => Some("Algorithm not supported")),
+          .applyOrElse[(Jwk, JwsHeader, String, Array[Byte]), Option[String]](
+            (key, header, signingInput, signature),
+            _ => Some("Algorithm not supported")
+        ),
         Jws[A](header, payload)
       ).swap
     } yield jws

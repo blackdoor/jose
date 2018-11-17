@@ -1,11 +1,11 @@
 package black.door.jose.jws
 
 
+import black.door.jose.Json._
+import black.door.jose.jwk.OctJwk
 import com.nimbusds.jose.crypto.{MACSigner, MACVerifier}
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader, JWSObject, Payload}
 import org.scalatest.{EitherValues, Matchers, WordSpec}
-import black.door.jose.Json._
-import black.door.jose.jwk.HsJwk
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,7 +14,7 @@ import scala.concurrent.duration.Duration
 class JwsSpec extends WordSpec with Matchers with EitherValues {
   "HS signatures" should {
 
-    val hsKey = HsJwk.generate
+    val hsKey = OctJwk.generate(256)
 
     "sign correctly" in {
       val jws = Jws(JwsHeader("HS256"), "test data".getBytes)
@@ -39,7 +39,7 @@ class JwsSpec extends WordSpec with Matchers with EitherValues {
       val jws = Jws(JwsHeader("HS256"), "test data".getBytes)
       val compact = jws.sign(hsKey)
 
-      val parsedJws = Await.result(Jws.validate[String](compact, HsJwk.generate), Duration.Inf)
+      val parsedJws = Await.result(Jws.validate[String](compact, OctJwk.generate(256)), Duration.Inf)
       parsedJws shouldBe 'left
     }
   }

@@ -7,11 +7,9 @@ package object jws {
   // (key, headerSerializer, header, payload)
   type InputSigner = PartialFunction[(Jwk, JwsHeader, String), Array[Byte]]
 
-  private[jws] def doKeyAndHeaderPlayNice(key: Jwk, header: JwsHeader) =
-    key.isValidFor(header.alg) &&
+  private[jose] def doKeyAndHeaderPlayNice(key: Jwk, header: JwsHeader) =
     key.alg.forall(_ == header.alg) &&
-    header.kid.forall(hid => key.kid.forall(_ == hid)) &&
-    key.use.forall(_ == "sig")
+    header.kid.forall(hid => key.kid.forall(_ == hid))
 
   // (key, header, signingInput, signature)
   type SignatureValidator = PartialFunction[(Jwk, JwsHeader, String, Array[Byte]), Boolean]

@@ -9,13 +9,13 @@ import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
 import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
 import org.scalatest.{FlatSpec, Matchers}
 import black.door.jose.Json._
-import black.door.jose.jwk.JavaP256KeyPair
+import black.door.jose.jwk.P256KeyPair
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class JwtSpec extends FlatSpec with Matchers {
 
-  val es256Key = JavaP256KeyPair.generate
+  val es256Key = P256KeyPair.generate
 
   def generateToken = {
     val claims = Claims(jti = Some("test token id"))
@@ -53,7 +53,7 @@ class JwtSpec extends FlatSpec with Matchers {
     signedJWT.sign(signer)
     val compact = signedJWT.serialize
 
-    Jwt.validateSync(compact, es256Key) shouldBe 'right
+    Jwt.validateSync(compact, es256Key.toPublic) shouldBe 'right
   }
 
   it should "fail for tokens before the nbf value" in {
@@ -69,7 +69,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for the wrong signature" in {
-    val key2 = JavaP256KeyPair.generate
+    val key2 = P256KeyPair.generate
     val compact = generateToken
     Jwt.validateSync(compact, key2) shouldBe 'left
   }

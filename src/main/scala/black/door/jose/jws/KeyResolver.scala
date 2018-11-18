@@ -10,6 +10,7 @@ trait KeyResolver[A] {
   def resolve(header: JwsHeader, payload: A): EitherT[Future, String, Jwk]
 }
 object KeyResolver {
-  implicit def fromSingleKey[A](key: Jwk)(implicit ex: ExecutionContext): KeyResolver[A] =
-    _ => EitherT.rightT[Future, String](key)
+  implicit def fromSingleKey[A](key: Jwk)(implicit ex: ExecutionContext) = new KeyResolver[A] {
+    def resolve(header: JwsHeader, payload: A) = EitherT.rightT(key)
+  }
 }

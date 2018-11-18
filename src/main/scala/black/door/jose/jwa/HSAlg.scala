@@ -1,5 +1,6 @@
 package black.door.jose.jwa
 import java.nio.charset.StandardCharsets
+import java.security.InvalidKeyException
 import java.util
 
 import black.door.jose.jwk.SymmetricJwk
@@ -18,7 +19,8 @@ sealed case class HSAlg(hashBits: Int) extends SignatureAlgorithm {
   }
 
   val sign = {
-    case (key: SymmetricJwk, header, signingInput) if alg == header.alg  =>
+    case (key: SymmetricJwk, header, signingInput) if alg == header.alg =>
+      if(key.k.length < hashBits / 8) throw new InvalidKeyException(s"$alg keys must be $hashBits bits (was ${key.k.length * 8})")
       val mac = Mac.getInstance(jcaAlgorithm)
       mac.init(new SecretKeySpec(key.k, jcaAlgorithm))
       mac.doFinal(signingInput.getBytes(StandardCharsets.US_ASCII))

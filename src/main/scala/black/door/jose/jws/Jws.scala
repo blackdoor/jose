@@ -37,7 +37,12 @@ trait Jws[A] {
       s"reported being applicable for ${header.alg}. This may indicate an improperly implemented SignatureAlgorithm."
     )
 
-    InputSigner.keyHeaderPreSigner.orElse(definedAlgs.map(_.sign).reduce(_ orElse _))
+    InputSigner.keyHeaderPreSigner.orElse(
+      definedAlgs
+        .map(_.sign)
+        .reduceOption(_ orElse _)
+        .getOrElse(PartialFunction.empty)
+    )
       .andThen(encoder.encodeToString)
       .andThen(signature => s"$signingInput.$signature")(signerTuple)
   }
@@ -103,7 +108,12 @@ object Jws {
       }
 
       jws <- EitherT.fromOption[Future](
-        SignatureValidator.keyHeaderPreValidator.orElse(definedAlgs.map(_.validate).reduce(_ orElse _))
+        SignatureValidator.keyHeaderPreValidator.orElse(
+          definedAlgs
+            .map(_.validate)
+            .reduceOption(_ orElse _)
+            .getOrElse(PartialFunction.empty)
+        )
           .andThen(if(_) None else Some("Signature was invalid"))
           .applyOrElse[(Jwk, JwsHeader, String, Array[Byte]), Option[String]](
             (key, header, signingInput, signature),

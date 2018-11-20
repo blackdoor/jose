@@ -3,19 +3,19 @@ package black.door.jose.jwt
 import java.time.Instant
 import java.util.Base64
 
+import black.door.jose.json.playjson.JsonSupport._
+import black.door.jose.jwk.P256KeyPair
 import com.nimbusds.jose.crypto.{ECDSASigner, ECDSAVerifier}
 import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
 import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
 import org.scalatest.{FlatSpec, Matchers}
-import black.door.jose.Json._
-import black.door.jose.jwk.P256KeyPair
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class JwtSpec extends FlatSpec with Matchers {
 
-  val es256Key = P256KeyPair.generate
+  val es256Key = P256KeyPair.generate.copy(alg = Some("ES256"))
 
   def generateToken = {
     val claims = Claims(jti = Some("test token id"))

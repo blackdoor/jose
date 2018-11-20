@@ -24,7 +24,7 @@ object Jwt {
   def sign(claims: Claims, key: Jwk, algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all)
           (implicit headerSerializer: Mapper[JwsHeader, Array[Byte]], payloadSerializer: Mapper[Claims, Array[Byte]]) = {
     val alg = key.alg.getOrElse(throw new KeyException("Jwk must have a defined alg to use Jwt.sign. Alternatively, create a Jwt with an explicit JwsHeader."))
-    Jwt(JwsHeader(alg, typ = Some("JWT")), claims).sign(key, algorithms)
+    Jwt(JwsHeader(alg, typ = Some("JWT"), kid = key.kid), claims).sign(key, algorithms)
   }
 
   /**

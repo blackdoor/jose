@@ -5,8 +5,9 @@ import java.security.interfaces.{ECPrivateKey => jECPrivateKey, ECPublicKey => j
 import java.security.spec._
 import java.security.{KeyFactory, KeyPairGenerator, SecureRandom}
 
+sealed trait EcJwk extends Jwk
 
-trait EcPublicKey extends PublicJwk {
+trait EcPublicKey extends EcJwk with PublicJwk {
   val kty = "EC"
   def crv: String
   def x: BigInt
@@ -20,7 +21,7 @@ trait EcPublicKey extends PublicJwk {
   }
 }
 
-trait EcPrivateKey extends PrivateJwk {
+trait EcPrivateKey extends EcJwk with PrivateJwk {
   val kty = "EC"
   def d: BigInt
 
@@ -42,12 +43,12 @@ trait EcKeyPair extends EcPublicKey with EcPrivateKey {
 case class P256PublicKey(
                           x: BigInt,
                           y: BigInt,
+                          alg: Option[String] = None,
                           use: Option[String] = None,
                           key_ops: Option[Seq[String]] = None,
                           kid: Option[String] = None
                         ) extends EcPublicKey {
   val crv = "P-256"
-  val alg = Some("ES256")
 
   def spec = P256KeyPair.P256ParameterSpec
 }
@@ -56,14 +57,14 @@ case class P256KeyPair(
                             d: BigInt,
                             x: BigInt,
                             y: BigInt,
+                            alg: Option[String] = None,
                             use: Option[String] = None,
                             key_ops: Option[Seq[String]] = None,
                             kid: Option[String] = None
                           ) extends EcKeyPair with EcPublicKey with EcPrivateKey {
   val crv = "P-256"
-  val alg = Some("ES256")
 
-  lazy val toPublic = P256PublicKey(x, y, use, key_ops, kid)
+  lazy val toPublic = P256PublicKey(x, y, alg, use, key_ops, kid)
   def spec = P256KeyPair.P256ParameterSpec
 }
 

@@ -35,7 +35,7 @@ errorOrJwt.right.get.claims.sub // Some(my user)
 
 ### Selecting a JSON implementation
 
-Work in progress, currently just `import black.door.jose.Json._` for Play JSON support.  
+Work in progress, currently just `import black.door.jose.json.playjson.JsonSupport._` for Play JSON support.  
 Implement `Mapper` implicits to add support for new libraries.
 
 ### Async key resolution and validation checks

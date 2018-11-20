@@ -1,7 +1,5 @@
 package black.door.jose.jws
 
-
-import black.door.jose.Json._
 import black.door.jose.jwk.OctJwk
 import com.nimbusds.jose.crypto.{MACSigner, MACVerifier}
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader, JWSObject, Payload}
@@ -10,6 +8,8 @@ import org.scalatest.{EitherValues, Matchers, WordSpec}
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import black.door.jose.json.playjson.JsonSupport._
+import black.door.jose.json.common._
 
 class JwsSpec extends WordSpec with Matchers with EitherValues {
   "HS signatures" should {

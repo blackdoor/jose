@@ -25,7 +25,7 @@ Pretty simple: make a key, make something to sign, sign it.
 
 ```scala
 val claims = Claims(sub = Some("my user"), iss = Some("me"), exp = Some(Instant.now.plus(1, ChronoUnit.DAYS)))
-val key = JavaP256KeyPair.generate
+val key = P256KeyPair.generate
 
 val compactToken = Jwt.sign(claims, key)
 

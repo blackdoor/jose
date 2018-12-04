@@ -16,7 +16,7 @@ Extensible JOSE library for Scala.
 ## Installation
 Add the below to your `build.sbt` (replace the value after the pound with the desired version)
 ```scala
-dependsOn(RootProject(uri("git://github.com/blackdoor/jose.git#0.1.1")))
+dependsOn(RootProject(uri("git://github.com/blackdoor/jose.git#0.1.2")))
 ```
 
 ## Usage

@@ -5,6 +5,6 @@ scala:
 if: branch = master OR tag = true
 
 script:
-  - sbt coverage test coverageReport
+  - sbt coverageOn coverage test coverageReport
   - bash <(curl -s https://codecov.io/bash)
   - ./ci/publish-docs.sh

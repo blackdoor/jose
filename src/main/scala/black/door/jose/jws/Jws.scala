@@ -13,16 +13,16 @@ import scala.collection.immutable.Seq
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-trait Jws[A] {
-  def header: JwsHeader
-  def payload: A
+trait Jws[Params, Payload] {
+  def header: JwsHeader[Params]
+  def payload: Payload
 
-  private lazy val logger = Logger(classOf[Jws[A]])
+  private lazy val logger = Logger(classOf[Jws[Params, Payload]])
 
   def sign(key: Jwk, algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all)
           (
-            implicit headerSerializer: Mapper[JwsHeader, Array[Byte]],
-            payloadSerializer: Mapper[A, Array[Byte]]
+            implicit headerSerializer: Mapper[JwsHeader[Params], Array[Byte]],
+            payloadSerializer: Mapper[Payload, Array[Byte]]
           ): String = {
     val encoder = Base64.getUrlEncoder.withoutPadding
     val Right(headerCompact) = headerSerializer(header).map(encoder.encodeToString)
@@ -48,29 +48,30 @@ trait Jws[A] {
   }
 }
 
-case class GenericJws[A](header: JwsHeader, payload: A) extends Jws[A]
+case class GenericJws[Params, Payload](header: JwsHeader[Params], payload: Payload) extends Jws[Params, Payload]
 
-case class JwsHeader(
+case class JwsHeader[UnregisteredParameters](
                       alg: String,
                       jku: Option[String] = None,
                       jwk: Option[Jwk] = None,
                       kid: Option[String] = None,
                       typ: Option[String] = None,
                       cty: Option[String] = None,
-                      crit: Option[Seq[String]] = None
+                      crit: Option[Seq[String]] = None,
+                      unregistered: UnregisteredParameters = ()
                     )
 
 object Jws {
   private lazy val logger = Logger(Jws.getClass)
 
-  def apply[A](header: JwsHeader, payload: A) = GenericJws(header, payload)
+  def apply[Params, Payload](header: JwsHeader[Params], payload: Payload) = GenericJws(header, payload)
 
   // return (signingInput, header, payload, signature)
-  private def parse[A](compact: String)
+  private def parse[Params, Payload](compact: String)
                       (
-                        implicit payloadDeserializer: Mapper[Array[Byte], A],
-                        headerDeserializer: Mapper[Array[Byte], JwsHeader]
-                      ): Either[String, (String, JwsHeader, A, Array[Byte])] =
+                        implicit payloadDeserializer: Mapper[Array[Byte], Payload],
+                        headerDeserializer: Mapper[Array[Byte], JwsHeader[Params]]
+                      ): Either[String, (String, JwsHeader[Params], Payload, Array[Byte])] =
     for {
       arr <- {
         val arr = compact.split('.')
@@ -86,14 +87,14 @@ object Jws {
       signature <- Try(decoder.decode(signatureC)).toEither.left.map(_.getMessage)
     } yield (signingInput, header, payload, signature)
 
-  def validate[A](compact: String, keyResolver: KeyResolver[A], algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all)
+  def validate[Par, Pay](compact: String, keyResolver: KeyResolver[Par, Pay], algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all)
                  (
-                   implicit payloadDeserializer: Mapper[Array[Byte], A],
-                   headerDeserializer: Mapper[Array[Byte], JwsHeader],
+                   implicit payloadDeserializer: Mapper[Array[Byte], Pay],
+                   headerDeserializer: Mapper[Array[Byte], JwsHeader[Par]],
                    ec: ExecutionContext
-                 ): Future[Either[String, Jws[A]]] = (
+                 ): Future[Either[String, Jws[Par, Pay]]] = (
     for {
-      tup <- EitherT.fromEither[Future](parse[A](compact))
+      tup <- EitherT.fromEither[Future](parse[Par, Pay](compact))
       (signingInput, header, payload, signature) = tup
       key <- keyResolver.resolve(header, payload)
       validatorTuple = (key, header, signingInput, signature)
@@ -115,11 +116,11 @@ object Jws {
             .getOrElse(PartialFunction.empty)
         )
           .andThen(if(_) None else Some("Signature was invalid"))
-          .applyOrElse[(Jwk, JwsHeader, String, Array[Byte]), Option[String]](
+          .applyOrElse[(Jwk, JwsHeader[Par], String, Array[Byte]), Option[String]](
             (key, header, signingInput, signature),
             _ => Some("Algorithm not supported")
         ),
-        Jws[A](header, payload)
+        Jws(header, payload)
       ).swap
     } yield jws
     ).value

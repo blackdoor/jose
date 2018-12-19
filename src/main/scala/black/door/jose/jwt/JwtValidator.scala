@@ -5,12 +5,12 @@ import java.time.{Clock, Instant}
 import scala.concurrent.{ExecutionContext, Future}
 
 object JwtValidator {
-  def combine(validators: Seq[JwtValidator])(implicit ex: ExecutionContext) =
+  def combine[HP](validators: Seq[JwtValidator[HP]])(implicit ex: ExecutionContext) =
     validators.fold(fromSync(PartialFunction.empty))(_ orElse _)
 
-  def fromSync(validator: PartialFunction[Jwt, String]): JwtValidator = validator.lift.andThen(Future.successful)
+  def fromSync[HP](validator: PartialFunction[Jwt[HP], String]): JwtValidator[HP] = validator.lift.andThen(Future.successful)
 
-  def defaultValidator(clock: Clock = Clock.systemDefaultZone): JwtValidator = {
+  def defaultValidator[HP](clock: Clock = Clock.systemDefaultZone): JwtValidator[HP] = {
     val now = Instant.now(clock)
     JwtValidator.fromSync {
       case Jwt(_, claims) if claims.exp.exists(_.isBefore(now)) => s"Token expired at ${claims.exp.get}. It was issued at ${claims.iat}."
@@ -19,22 +19,22 @@ object JwtValidator {
     }
   }
 
-  implicit class JwtValidatorOps(val v: JwtValidator) extends AnyVal {
-    def orElse(next: JwtValidator)(implicit ex: ExecutionContext): JwtValidator = jwt => v(jwt).flatMap {
+  implicit class JwtValidatorOps[HP](val v: JwtValidator[HP]) extends AnyVal {
+    def orElse[HP2 >: HP](next: JwtValidator[HP2])(implicit ex: ExecutionContext): JwtValidator[HP2] = jwt => v(jwt).flatMap {
       case None => next(jwt)
       case some => Future.successful(some)
     }
   }
 
-  val empty = fromSync(PartialFunction.empty)
+  def empty[HP]: JwtValidator[HP] = fromSync(PartialFunction.empty)
 }
 
 trait Check {
   def iss(check: String => Boolean, required: Boolean = true) =
-    JwtValidator.fromSync { case jwt if !jwt.claims.iss.exists(check) || (required && jwt.claims.iss.isEmpty) => "Issuer invalid" }
+    JwtValidator.fromSync[Any] { case jwt if !jwt.claims.iss.exists(check) || (required && jwt.claims.iss.isEmpty) => "Issuer invalid" }
   def sub(check: String => Boolean, required: Boolean = true) =
-    JwtValidator.fromSync { case jwt if !jwt.claims.sub.exists(check) || (required && jwt.claims.sub.isEmpty) => "Subject invalid" }
+    JwtValidator.fromSync[Any] { case jwt if !jwt.claims.sub.exists(check) || (required && jwt.claims.sub.isEmpty) => "Subject invalid" }
   def aud(check: String => Boolean, required: Boolean = true) =
-    JwtValidator.fromSync { case jwt if !jwt.claims.aud.exists(check) || (required && jwt.claims.aud.isEmpty) => "Audience invalid" }
+    JwtValidator.fromSync[Any] { case jwt if !jwt.claims.aud.exists(check) || (required && jwt.claims.aud.isEmpty) => "Audience invalid" }
 }
 object Check extends Check

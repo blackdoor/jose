@@ -6,11 +6,11 @@ import black.door.jose.jwk.Jwk
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait KeyResolver[A] {
-  def resolve(header: JwsHeader, payload: A): EitherT[Future, String, Jwk]
+trait KeyResolver[Par, Pay] {
+  def resolve(header: JwsHeader[Par], payload: Pay): EitherT[Future, String, Jwk]
 }
 object KeyResolver {
-  implicit def fromSingleKey[A](key: Jwk)(implicit ex: ExecutionContext) = new KeyResolver[A] {
-    def resolve(header: JwsHeader, payload: A) = EitherT.rightT(key)
+  implicit def fromSingleKey[Par, Pay](key: Jwk)(implicit ex: ExecutionContext) = new KeyResolver[Par, Pay] {
+    def resolve(header: JwsHeader[Par], payload: Pay) = EitherT.rightT(key)
   }
 }

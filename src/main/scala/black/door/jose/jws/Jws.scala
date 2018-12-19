@@ -50,7 +50,7 @@ trait Jws[Params, Payload] {
 
 case class GenericJws[Params, Payload](header: JwsHeader[Params], payload: Payload) extends Jws[Params, Payload]
 
-case class JwsHeader[UnregisteredParameters](
+case class JwsHeader[+UnregisteredParameters](
                       alg: String,
                       jku: Option[String] = None,
                       jwk: Option[Jwk] = None,
@@ -87,14 +87,14 @@ object Jws {
       signature <- Try(decoder.decode(signatureC)).toEither.left.map(_.getMessage)
     } yield (signingInput, header, payload, signature)
 
-  def validate[Par, Pay](compact: String, keyResolver: KeyResolver[Par, Pay], algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all)
+  def validate[HP, PL](compact: String, keyResolver: KeyResolver[HP, PL], algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all)
                  (
-                   implicit payloadDeserializer: Mapper[Array[Byte], Pay],
-                   headerDeserializer: Mapper[Array[Byte], JwsHeader[Par]],
+                   implicit payloadDeserializer: Mapper[Array[Byte], PL],
+                   headerDeserializer: Mapper[Array[Byte], JwsHeader[HP]],
                    ec: ExecutionContext
-                 ): Future[Either[String, Jws[Par, Pay]]] = (
+                 ): Future[Either[String, Jws[HP, PL]]] = (
     for {
-      tup <- EitherT.fromEither[Future](parse[Par, Pay](compact))
+      tup <- EitherT.fromEither[Future](parse[HP, PL](compact))
       (signingInput, header, payload, signature) = tup
       key <- keyResolver.resolve(header, payload)
       validatorTuple = (key, header, signingInput, signature)
@@ -116,7 +116,7 @@ object Jws {
             .getOrElse(PartialFunction.empty)
         )
           .andThen(if(_) None else Some("Signature was invalid"))
-          .applyOrElse[(Jwk, JwsHeader[Par], String, Array[Byte]), Option[String]](
+          .applyOrElse[(Jwk, JwsHeader[HP], String, Array[Byte]), Option[String]](
             (key, header, signingInput, signature),
             _ => Some("Algorithm not supported")
         ),

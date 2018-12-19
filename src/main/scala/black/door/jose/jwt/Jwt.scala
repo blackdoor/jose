@@ -50,10 +50,10 @@ object Jwt {
               )
               (
                 implicit payloadDeserializer: Mapper[Array[Byte], Claims],
-                headerDeserializer: Mapper[Array[Byte], JwsHeader],
+                headerDeserializer: Mapper[Array[Byte], JwsHeader[HP]],
                 ec: ExecutionContext
-              ): Future[Either[String, Jwt]] = {
-    EitherT(Jws.validate[Claims](compact, keyResolver, algorithms))
+              ): Future[Either[String, Jwt[HP]]] = {
+    EitherT(Jws.validate[HP, Claims](compact, keyResolver, algorithms))
       .flatMap { jws =>
         val jwt = Jwt(jws.header, jws.payload)
         OptionT(jwtValidator.orElse(fallbackJwtValidator).apply(jwt)).toLeft(jwt)

@@ -13,8 +13,8 @@ object JwtValidator {
   def defaultValidator(clock: Clock = Clock.systemDefaultZone): JwtValidator = {
     val now = Instant.now(clock)
     JwtValidator.fromSync {
-      case Jwt(_, claims) if claims.exp.exists(_.isBefore(now)) => s"Token expired at ${claims.exp.get}. It was issued at ${claims.iss}."
-      case Jwt(_, claims) if claims.nbf.exists(_.isAfter(now)) => s"Token will not be valid until ${claims.nbf.getOrElse("fail")}. It was issued at ${claims.iss}."
+      case Jwt(_, claims) if claims.exp.exists(_.isBefore(now)) => s"Token expired at ${claims.exp.get}. It was issued at ${claims.iat}."
+      case Jwt(_, claims) if claims.nbf.exists(_.isAfter(now)) => s"Token will not be valid until ${claims.nbf.getOrElse("fail")}. It was issued at ${claims.iat}."
       case Jwt(_, claims) if claims.iat.exists(iat => claims.exp.exists(_.isBefore(iat))) => "Token was never valid, it expired before it was issued"
     }
   }

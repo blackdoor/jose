@@ -9,13 +9,14 @@ import black.door.jose.Mapper
 import black.door.jose.jwa.{SignatureAlgorithm, SignatureAlgorithms}
 import black.door.jose.jwk.Jwk
 import black.door.jose.jws._
+import black.door.jose.jwt.Jwt.validate
 import black.door.jose.jwt.JwtValidator.JwtValidatorOps
 
 import scala.collection.immutable.Seq
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-case class Jwt[PrivateClaims](header: JwsHeader, claims: Claims[PrivateClaims]) extends Jws[Claims[PrivateClaims]] {
+case class Jwt[UnregisteredClaims](header: JwsHeader, claims: Claims[UnregisteredClaims]) extends Jws[Claims[UnregisteredClaims]] {
   def payload = claims
 }
 
@@ -61,35 +62,39 @@ object Jwt {
 
   private val sadSpasticLittleEc = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool)
 
+  private trait TypedValidation[C] {
+    def compact: String
+
+    case class using(
+                      keyResolver: KeyResolver[Claims[C]],
+                      jwtValidator: JwtValidator[C] = JwtValidator.empty[C],
+                      fallbackJwtValidator: JwtValidator[C] = JwtValidator.defaultValidator[C](),
+                      algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
+                    )
+                    (
+                      implicit payloadDeserializer: Mapper[Array[Byte], Claims[C]],
+                      headerDeserializer: Mapper[Array[Byte], JwsHeader]
+                    ) {
+      def now = Await.result(
+        validate(compact, keyResolver, jwtValidator, fallbackJwtValidator, algorithms)(payloadDeserializer, headerDeserializer, sadSpasticLittleEc),
+        Duration(1, TimeUnit.SECONDS)
+      )
+
+      def async(implicit ec: ExecutionContext) = validate(compact, keyResolver, jwtValidator, fallbackJwtValidator, algorithms)
+    }
+  }
+
+  case class validate(compact: String) extends AnyVal with TypedValidation[Unit] {
+    self =>
+    //def registeredClaims = new TypedValidation[Unit]
+    //def unregisteredClaims[A] = new TypedValidation[A]
+
+    def apply[A] = new TypedValidation[A] {
+      def compact = self.compact
+    }
+  }
+
   /*
-  def validateSync(compact: String,
-                   keyResolver: KeyResolver[StandardClaims],
-                   jwtValidator: JwtValidator[Unit] = JwtValidator.empty,
-                   fallbackJwtValidator: JwtValidator[Unit] = JwtValidator.defaultValidator(),
-                   algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
-                  )
-                  (
-                    implicit payloadDeserializer: Mapper[Array[Byte], StandardClaims],
-                    headerDeserializer: Mapper[Array[Byte], JwsHeader]
-                  ) = validateSync[Unit](compact, keyResolver, jwtValidator, fallbackJwtValidator, algorithms)
-  */
-
-  def validateSync[C](compact: String,
-                   keyResolver: KeyResolver[Claims[C]],
-                   jwtValidator: JwtValidator[C] = JwtValidator.empty[C],
-                   fallbackJwtValidator: JwtValidator[C] = JwtValidator.defaultValidator[C](),
-                   algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
-                  )
-                  (
-                    implicit payloadDeserializer: Mapper[Array[Byte], Claims[C]],
-                    headerDeserializer: Mapper[Array[Byte], JwsHeader]
-                  ) =
-    Await.result(
-      validate(compact, keyResolver, jwtValidator, fallbackJwtValidator, algorithms)
-              (payloadDeserializer, headerDeserializer, sadSpasticLittleEc),
-      Duration(1, TimeUnit.SECONDS)
-    )
-
   object validate {
 
     def apply =
@@ -116,4 +121,5 @@ object Jwt {
         }.value
     }
   }
+  */
 }

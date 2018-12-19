@@ -4,7 +4,7 @@ import scala.concurrent.Future
 
 package object jwt {
 
-  type StandardClaims = Claims[Unit]
+  type RegisteredClaims = Claims[Unit]
 
-  type JwtValidator[PrivateClaims] = Jwt[PrivateClaims] => Future[Option[String]]
+  type JwtValidator[UnregisteredClaims] = Jwt[UnregisteredClaims] => Future[Option[String]]
 }

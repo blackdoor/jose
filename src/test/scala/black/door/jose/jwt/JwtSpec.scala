@@ -21,7 +21,7 @@ class JwtSpec extends FlatSpec with Matchers {
   val es256Key = P256KeyPair.generate.copy(alg = Some("ES256"))
 
   def generateToken = {
-    val claims = StandardClaims(jti = Some("test token id"))
+    val claims = RegisteredClaims(jti = Some("test token id"))
     Jwt.sign(claims, es256Key)
   }
 
@@ -34,7 +34,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "sign with ES256" in {
-    val claims = StandardClaims(jti = Some("test token id"))
+    val claims = RegisteredClaims(jti = Some("test token id"))
     val compact = Jwt.sign(claims, es256Key)
 
     val encoder = Base64.getUrlEncoder
@@ -60,20 +60,21 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for tokens before the nbf value" in {
-    val claims = StandardClaims(nbf = Some(Instant.now.plusSeconds(60)))
+    val claims = RegisteredClaims(nbf = Some(Instant.now.plusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validateSync(compact, es256Key) shouldBe 'left
+    Jwt.validateSync[Unit](compact, es256Key) shouldBe 'left
   }
 
   it should "fail for tokens after the exp value" in {
-    val claims = StandardClaims(exp = Some(Instant.now.minusSeconds(60)))
+    val claims = RegisteredClaims(exp = Some(Instant.now.minusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validateSync(compact, es256Key) shouldBe 'left
+    Jwt.validate(compact).using(es256Key).now shouldBe 'left
   }
 
   it should "fail for the wrong signature" in {
     val key2 = P256KeyPair.generate
     val compact = generateToken
+    Jwt.validate("")[Unit]
     Jwt.validateSync(compact, key2) shouldBe 'left
   }
 
@@ -85,7 +86,7 @@ class JwtSpec extends FlatSpec with Matchers {
   ))
 
   it should "fail for the wrong iss value" in {
-    val claims = StandardClaims(
+    val claims = RegisteredClaims(
       iss = Some("miss"),
       aud = Some("aud"),
       sub = Some("sub")
@@ -95,7 +96,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for the wrong aud value" in {
-    val claims = StandardClaims(
+    val claims = RegisteredClaims(
       iss = Some("iss"),
       aud = Some("miss"),
       sub = Some("sub")
@@ -105,7 +106,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for the wrong sub value" in {
-    val claims = StandardClaims(
+    val claims = RegisteredClaims(
       iss = Some("iss"),
       aud = Some("aud"),
       sub = Some("miss")
@@ -115,7 +116,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for missing iss value" in {
-    val claims = StandardClaims(
+    val claims = RegisteredClaims(
       aud = Some("aud"),
       sub = Some("sub")
     )
@@ -124,7 +125,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for missing aud value" in {
-    val claims = StandardClaims(
+    val claims = RegisteredClaims(
       iss = Some("iss"),
       sub = Some("sub")
     )
@@ -133,7 +134,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for missing sub value" in {
-    val claims = StandardClaims(
+    val claims = RegisteredClaims(
       iss = Some("iss"),
       aud = Some("aud")
     )

@@ -13,6 +13,7 @@ import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
 import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
 import org.scalatest.{FlatSpec, Matchers}
+import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -21,7 +22,7 @@ class JwtSpec extends FlatSpec with Matchers {
   val es256Key = P256KeyPair.generate.copy(alg = Some("ES256"))
 
   def generateToken = {
-    val claims = RegisteredClaims(jti = Some("test token id"))
+    val claims = Claims(jti = Some("test token id"))
     Jwt.sign(claims, es256Key)
   }
 
@@ -34,7 +35,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "sign with ES256" in {
-    val claims = RegisteredClaims(jti = Some("test token id"))
+    val claims = Claims(jti = Some("test token id"))
     val compact = Jwt.sign(claims, es256Key)
 
     val encoder = Base64.getUrlEncoder
@@ -56,17 +57,17 @@ class JwtSpec extends FlatSpec with Matchers {
     signedJWT.sign(signer)
     val compact = signedJWT.serialize
 
-    Jwt.validateSync[Unit](compact, es256Key.toPublic) shouldBe 'right
+    Jwt.validate(compact).using(es256Key.toPublic).now shouldBe 'right
   }
 
   it should "fail for tokens before the nbf value" in {
-    val claims = RegisteredClaims(nbf = Some(Instant.now.plusSeconds(60)))
+    val claims = Claims(nbf = Some(Instant.now.plusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validateSync[Unit](compact, es256Key) shouldBe 'left
+    Jwt.validate(compact).using(es256Key).now shouldBe 'left
   }
 
   it should "fail for tokens after the exp value" in {
-    val claims = RegisteredClaims(exp = Some(Instant.now.minusSeconds(60)))
+    val claims = Claims(exp = Some(Instant.now.minusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
     Jwt.validate(compact).using(es256Key).now shouldBe 'left
   }
@@ -75,7 +76,7 @@ class JwtSpec extends FlatSpec with Matchers {
     val key2 = P256KeyPair.generate
     val compact = generateToken
     Jwt.validate("")[Unit]
-    Jwt.validateSync(compact, key2) shouldBe 'left
+    Jwt.validate(compact).using(key2).now shouldBe 'left
   }
 
   import Check._
@@ -86,59 +87,78 @@ class JwtSpec extends FlatSpec with Matchers {
   ))
 
   it should "fail for the wrong iss value" in {
-    val claims = RegisteredClaims(
+    val claims = Claims(
       iss = Some("miss"),
       aud = Some("aud"),
       sub = Some("sub")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
   }
 
   it should "fail for the wrong aud value" in {
-    val claims = RegisteredClaims(
+    val claims = Claims(
       iss = Some("iss"),
       aud = Some("miss"),
       sub = Some("sub")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
   }
 
   it should "fail for the wrong sub value" in {
-    val claims = RegisteredClaims(
+    val claims = Claims(
       iss = Some("iss"),
       aud = Some("aud"),
       sub = Some("miss")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
   }
 
   it should "fail for missing iss value" in {
-    val claims = RegisteredClaims(
+    val claims = Claims(
       aud = Some("aud"),
       sub = Some("sub")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
   }
 
   it should "fail for missing aud value" in {
-    val claims = RegisteredClaims(
+    val claims = Claims(
       iss = Some("iss"),
       sub = Some("sub")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
   }
 
   it should "fail for missing sub value" in {
-    val claims = RegisteredClaims(
+    val claims = Claims(
       iss = Some("iss"),
       aud = Some("aud")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validateSync(compact, es256Key, jwtValidator = validations) shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
+  }
+
+  case class MyCustomClaimsClass(thisTokenIsForAnAdmin: Boolean)
+  object MyCustomClaimsClass { implicit val format = Json.format[MyCustomClaimsClass] }
+
+  it should "work with custom claims" in {
+    val customValidator = JwtValidator.fromSync[MyCustomClaimsClass] {
+      case jwt if !jwt.claims.unregistered.thisTokenIsForAnAdmin => "Token needs to be for an admin"
+    }
+
+    val claims = Claims(unregistered = MyCustomClaimsClass(false))
+    val compact = Jwt.sign(claims, es256Key)
+
+    Jwt.validate(compact)[MyCustomClaimsClass].using(es256Key, customValidator).now shouldBe 'left
+
+    val claims2 = Claims(unregistered = MyCustomClaimsClass(true))
+    val compact2 = Jwt.sign(claims2, es256Key)
+
+    Jwt.validate(compact2)[MyCustomClaimsClass].using(es256Key, customValidator).now shouldBe 'right
   }
 }

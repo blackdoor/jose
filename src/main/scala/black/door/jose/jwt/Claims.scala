@@ -10,19 +10,5 @@ case class Claims[UnregisteredClaims](
                             nbf: Option[Instant] = None,
                             iat: Option[Instant] = None,
                             jti: Option[String] = None,
-                            unregistered: UnregisteredClaims // note: UnregisteredClaims cannot be an option type with some json marshallers
+                            unregistered: UnregisteredClaims = () // note: UnregisteredClaims cannot be an option type with some json marshallers
                  )
-
-
-
-object RegisteredClaims {
-  def apply(
-             iss: Option[String] = None,
-             sub: Option[String] = None,
-             aud: Option[String] = None,
-             exp: Option[Instant] = None,
-             nbf: Option[Instant] = None,
-             iat: Option[Instant] = None,
-             jti: Option[String] = None,
-           ): RegisteredClaims = Claims (iss, sub, aud, exp, nbf, iat, jti, Unit)
-}

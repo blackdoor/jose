@@ -11,15 +11,20 @@ trait JwtJsonSupport {
   implicit val unitReads = Reads[Unit](_ => JsSuccess(Unit))
   implicit val unitWrites = OWrites[Unit](_ => JsObject.empty)
 
-  private val customInjector = Reads[JsValue](js => js.validate[JsObject].map(obj => obj + (unregisteredObjectKey, JsNull)))
+  private val unitClaimsReads = Json.reads[Claims[Unit]]
+  private val unregisteredInjector = Reads(_.validate[JsObject]
+    .map ( jsObj =>
+      if(jsObj.keys.contains(unregisteredObjectKey)) jsObj
+      else jsObj + (unregisteredObjectKey, JsNull)
+    )
+  )
 
-  implicit def claimsReads[A: Reads]: Reads[Claims[A]] = Json.reads[Claims[A]]
-    .compose(Reads(_.validate[JsObject]
-      .map ( jsObj =>
-        if(jsObj.keys.contains(unregisteredObjectKey)) jsObj
-        else jsObj + (unregisteredObjectKey, JsNull)
-      )
-    ))
+  implicit def claimsReads[A](implicit unregisteredReads: Reads[A]): Reads[Claims[A]] = Reads { js =>
+    for {
+      unitClaims <- unitClaimsReads.reads(js)
+      unregistered <- unregisteredReads.reads(js)
+    } yield unitClaims.copy(unregistered = unregistered)
+  }.compose(unregisteredInjector)
 
   private def preClaimsWrites[A: Writes] = Json.writes[Claims[A]]
 

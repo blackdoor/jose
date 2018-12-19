@@ -9,7 +9,6 @@ import black.door.jose.Mapper
 import black.door.jose.jwa.{SignatureAlgorithm, SignatureAlgorithms}
 import black.door.jose.jwk.Jwk
 import black.door.jose.jws._
-import black.door.jose.jwt.Jwt.validate
 import black.door.jose.jwt.JwtValidator.JwtValidatorOps
 
 import scala.collection.immutable.Seq
@@ -39,6 +38,7 @@ object Jwt {
     * @param payloadDeserializer
     * @param headerDeserializer
     * @param ec
+    * @tparam C unregistered claims type
     * @return
     */
   def validate[C](
@@ -62,7 +62,7 @@ object Jwt {
 
   private val sadSpasticLittleEc = ExecutionContext.fromExecutorService(Executors.newCachedThreadPool)
 
-  private trait TypedValidation[C] {
+  sealed trait TypedValidation[C] {
     def compact: String
 
     case class using(
@@ -84,7 +84,7 @@ object Jwt {
     }
   }
 
-  case class validate(compact: String) extends AnyVal with TypedValidation[Unit] {
+  case class validate(compact: String) extends TypedValidation[Unit] {
     self =>
     //def registeredClaims = new TypedValidation[Unit]
     //def unregisteredClaims[A] = new TypedValidation[A]
@@ -93,33 +93,4 @@ object Jwt {
       def compact = self.compact
     }
   }
-
-  /*
-  object validate {
-
-    def apply =
-    
-
-    class DoIt[C]
-
-    private def doIt[C](
-                  compact: String,
-                  keyResolver: KeyResolver[Claims[C]],
-                  jwtValidator: JwtValidator[C] = JwtValidator.empty,
-                  fallbackJwtValidator: JwtValidator[C] = JwtValidator.defaultValidator(),
-                  algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
-                )
-                (
-                  implicit payloadDeserializer: Mapper[Array[Byte], Claims[C]],
-                  headerDeserializer: Mapper[Array[Byte], JwsHeader],
-                  ec: ExecutionContext
-                ): Future[Either[String, Jwt[C]]] = {
-      EitherT(Jws.validate[Claims[C]](compact, keyResolver, algorithms))
-        .flatMap { jws =>
-          val jwt = Jwt(jws.header, jws.payload)
-          OptionT(jwtValidator.orElse(fallbackJwtValidator).apply(jwt)).toLeft(jwt)
-        }.value
-    }
-  }
-  */
 }

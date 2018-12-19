@@ -3,8 +3,11 @@ package black.door.jose.jwt
 import java.time.Instant
 import java.util.Base64
 
+import black.door.jose.Mapper
 import black.door.jose.json.playjson.JsonSupport._
+import black.door.jose.json.playjson.jwt.JwtJsonSupport
 import black.door.jose.jwk.P256KeyPair
+import black.door.jose.jws.{JwsHeader, KeyResolver}
 import com.nimbusds.jose.crypto.{ECDSASigner, ECDSAVerifier}
 import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
@@ -18,7 +21,7 @@ class JwtSpec extends FlatSpec with Matchers {
   val es256Key = P256KeyPair.generate.copy(alg = Some("ES256"))
 
   def generateToken = {
-    val claims = Claims(jti = Some("test token id"))
+    val claims = StandardClaims(jti = Some("test token id"))
     Jwt.sign(claims, es256Key)
   }
 
@@ -31,7 +34,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "sign with ES256" in {
-    val claims = Claims(jti = Some("test token id"))
+    val claims = StandardClaims(jti = Some("test token id"))
     val compact = Jwt.sign(claims, es256Key)
 
     val encoder = Base64.getUrlEncoder
@@ -53,17 +56,17 @@ class JwtSpec extends FlatSpec with Matchers {
     signedJWT.sign(signer)
     val compact = signedJWT.serialize
 
-    Jwt.validateSync(compact, es256Key.toPublic) shouldBe 'right
+    Jwt.validateSync[Unit](compact, es256Key.toPublic) shouldBe 'right
   }
 
   it should "fail for tokens before the nbf value" in {
-    val claims = Claims(nbf = Some(Instant.now.plusSeconds(60)))
+    val claims = StandardClaims(nbf = Some(Instant.now.plusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
     Jwt.validateSync(compact, es256Key) shouldBe 'left
   }
 
   it should "fail for tokens after the exp value" in {
-    val claims = Claims(exp = Some(Instant.now.minusSeconds(60)))
+    val claims = StandardClaims(exp = Some(Instant.now.minusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
     Jwt.validateSync(compact, es256Key) shouldBe 'left
   }
@@ -75,14 +78,14 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   import Check._
-  val validations = JwtValidator.combine(Seq(
+  def validations[C] = JwtValidator.combine[C](Seq(
     aud(_ == "aud"),
     iss(_ == "iss"),
     sub(_ == "sub")
   ))
 
   it should "fail for the wrong iss value" in {
-    val claims = Claims(
+    val claims = StandardClaims(
       iss = Some("miss"),
       aud = Some("aud"),
       sub = Some("sub")
@@ -92,7 +95,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for the wrong aud value" in {
-    val claims = Claims(
+    val claims = StandardClaims(
       iss = Some("iss"),
       aud = Some("miss"),
       sub = Some("sub")
@@ -102,7 +105,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for the wrong sub value" in {
-    val claims = Claims(
+    val claims = StandardClaims(
       iss = Some("iss"),
       aud = Some("aud"),
       sub = Some("miss")
@@ -112,7 +115,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for missing iss value" in {
-    val claims = Claims(
+    val claims = StandardClaims(
       aud = Some("aud"),
       sub = Some("sub")
     )
@@ -121,7 +124,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for missing aud value" in {
-    val claims = Claims(
+    val claims = StandardClaims(
       iss = Some("iss"),
       sub = Some("sub")
     )
@@ -130,7 +133,7 @@ class JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "fail for missing sub value" in {
-    val claims = Claims(
+    val claims = StandardClaims(
       iss = Some("iss"),
       aud = Some("aud")
     )

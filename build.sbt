@@ -5,6 +5,7 @@ version := "0.1.2"
 scalaVersion := "2.12.7"
 
 libraryDependencies ++= Seq(
+  // todo remove play and shapless when json is moved to separate project
   "org.typelevel" %% "cats-core" % "1.4.0",
   "com.typesafe.play" %% "play-json" % "2.6.10",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",

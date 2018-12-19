@@ -4,6 +4,8 @@ import black.door.jose.jwk._
 
 package object jws {
 
+  //type StandardJwsHeader = JwsHeader[Unit]
+
   // (key, headerSerializer, header, payload)
   type InputSigner = PartialFunction[(Jwk, JwsHeader, String), Array[Byte]]
 

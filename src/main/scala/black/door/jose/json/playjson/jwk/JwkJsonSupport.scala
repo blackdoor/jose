@@ -41,5 +41,3 @@ trait JwkJsonSupport {
 
   implicit def jwkWrites: Writes[Jwk] = Writes(_ => ???)
 }
-
-object JwkJsonSupport extends JwkJsonSupport

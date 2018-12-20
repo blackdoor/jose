@@ -9,6 +9,7 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import black.door.jose.json.playjson.JsonSupport._
+import black.door.jose.json.playjson._
 import black.door.jose.json.common._
 
 class JwsSpec extends WordSpec with Matchers with EitherValues {
@@ -31,7 +32,7 @@ class JwsSpec extends WordSpec with Matchers with EitherValues {
       jwsObj.sign(signer)
       val compact = jwsObj.serialize
 
-      val jws = Await.result(Jws.validate[String](compact, hsKey), Duration.Inf)
+      val jws = Await.result(Jws.validate[Unit, String](compact, hsKey), Duration.Inf)
       jws.right.value.payload shouldBe payload
     }
 
@@ -39,7 +40,7 @@ class JwsSpec extends WordSpec with Matchers with EitherValues {
       val jws = Jws(JwsHeader("HS256"), "test data".getBytes)
       val compact = jws.sign(hsKey)
 
-      val parsedJws = Await.result(Jws.validate[String](compact, OctJwk.generate(256)), Duration.Inf)
+      val parsedJws = Await.result(Jws.validate[Unit, String](compact, OctJwk.generate(256)), Duration.Inf)
       parsedJws shouldBe 'left
     }
   }

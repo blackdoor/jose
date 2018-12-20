@@ -8,32 +8,16 @@ trait JwtJsonSupport {
 
   private val unregisteredObjectKey = "unregistered"
 
-  implicit val unitReads = Reads[Unit](_ => JsSuccess(Unit))
-  implicit val unitWrites = OWrites[Unit](_ => JsObject.empty)
-
   private val unitClaimsReads = Json.reads[Claims[Unit]]
-  private val unregisteredInjector = Reads(_.validate[JsObject]
-    .map ( jsObj =>
-      if(jsObj.keys.contains(unregisteredObjectKey)) jsObj
-      else jsObj + (unregisteredObjectKey, JsNull)
-    )
-  )
-
-  implicit def claimsReads[A](implicit unregisteredReads: Reads[A]): Reads[Claims[A]] = Reads { js =>
-    for {
-      unitClaims <- unitClaimsReads.reads(js)
-      unregistered <- unregisteredReads.reads(js)
-    } yield unitClaims.copy(unregistered = unregistered)
-  }.compose(unregisteredInjector)
 
   private def preClaimsWrites[A: Writes] = Json.writes[Claims[A]]
 
-  implicit def claimsWrites[A: OWrites]: OWrites[Claims[A]] = preClaimsWrites[A]
-    .transform { jsObj: JsObject =>
-      (jsObj - unregisteredObjectKey) ++ (jsObj \ unregisteredObjectKey).as[JsObject]
-    }
+  implicit def claimsWrites[A: OWrites]: OWrites[Claims[A]] =
+    integratedWrites(unregisteredObjectKey, preClaimsWrites[A])
+
+  implicit def claimsReads[A: Reads]: Reads[Claims[A]] =
+    integratedReads(unregisteredObjectKey, unitClaimsReads)
 
   implicit def claimsSerializer[C](implicit w: Writes[Claims[C]]) = jsonSerializer[Claims[C]]
   implicit def claimsDeserializer[C](implicit r: Reads[Claims[C]]) = jsonDeserializer[Claims[C]]
 }
-object JwtJsonSupport extends JwtJsonSupport

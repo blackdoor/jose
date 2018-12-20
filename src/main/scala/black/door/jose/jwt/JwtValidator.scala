@@ -8,7 +8,7 @@ object JwtValidator {
   def combine[C](validators: Seq[JwtValidator[C]])(implicit ex: ExecutionContext) =
     validators.fold(fromSync(PartialFunction.empty))(_ orElse _)
 
-  def fromSync[C](validator: PartialFunction[Jwt[C], String]): JwtValidator[C] = 
+  def fromSync[C](validator: PartialFunction[Jwt[Any, C], String]): JwtValidator[C] =
     validator.lift.andThen(Future.successful)
 
   def defaultValidator[C](clock: Clock = Clock.systemDefaultZone): JwtValidator[C] = {

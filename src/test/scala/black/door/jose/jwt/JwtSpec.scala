@@ -3,9 +3,10 @@ package black.door.jose.jwt
 import java.time.Instant
 import java.util.Base64
 
-import black.door.jose.Mapper
+import black.door.jose.Unmapper
+import black.door.jose.json.playjson._
 import black.door.jose.json.playjson.JsonSupport._
-import black.door.jose.json.playjson.jwt.JwtJsonSupport
+import black.door.jose.json.common._
 import black.door.jose.jwk.P256KeyPair
 import black.door.jose.jws.{JwsHeader, KeyResolver}
 import com.nimbusds.jose.crypto.{ECDSASigner, ECDSAVerifier}
@@ -56,13 +57,17 @@ class JwtSpec extends FlatSpec with Matchers {
     val signer = new ECDSASigner(nimbusJwk)
     signedJWT.sign(signer)
     val compact = signedJWT.serialize
-
-    Jwt.validate(compact).using(es256Key.toPublic).now shouldBe 'right
+    Jwt.validate(compact).using(es256Key.toPublic)//(
+      //implicitly[Unmapper[Array[Byte], Claims[Unit]]],
+      //implicitly[Unmapper[Array[Byte], JwsHeader[Unit]]]
+    //)
+      .now shouldBe 'right
   }
 
   it should "fail for tokens before the nbf value" in {
     val claims = Claims(nbf = Some(Instant.now.plusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
+    //val x = headerDeserializer[Unit]
     Jwt.validate(compact).using(es256Key).now shouldBe 'left
   }
 

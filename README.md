@@ -11,12 +11,12 @@ Extensible JOSE library for Scala.
 > * JWE
 > * RSA
 > * Less common key sizes for ECDSA
-> * Custom parameters
+> * Custom JOSE header parameters (custom JWT claims are supported)
 
 ## Installation
 Add the below to your `build.sbt` (replace the value after the pound with the desired version)
 ```scala
-dependsOn(RootProject(uri("git://github.com/blackdoor/jose.git#0.1.2")))
+dependsOn(RootProject(uri("git://github.com/blackdoor/jose.git#0.2.1")))
 ```
 
 ## Usage

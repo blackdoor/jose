@@ -1,6 +1,6 @@
 name := "jose"
 
-version := "0.1.2"
+version := "0.2.1"
 
 scalaVersion := "2.12.7"
 

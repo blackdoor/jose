@@ -29,7 +29,7 @@ val key = P256KeyPair.generate
 
 val compactToken = Jwt.sign(claims, key)
 
-val errorOrJwt = Jwt.validateSync(compactToken, key, Check.iss("me").orElse(JwtValidator.defaultValidator))
+val errorOrJwt = Jwt.validate(compactToken).using(key, Check.iss("me")).now
 errorOrJwt.right.get.claims.sub // Some(my user)
 ```
 
@@ -46,3 +46,29 @@ This is easy to do asynchronously by implementing `KeyResolver` or `JwtValidator
 `JwtValidator` is a partial function so you can easily chain both sync and async validations.  
 `KeyResolver` allows you to return an error in the event that there was a specific reason a key could not be found 
 (perhaps a key does exist, but it's only for encryption and this token is using it for signing).
+
+### JWT validation DSL
+
+There is a handy compile-safe DSL for JWT validation that allows you to indicate if you want to use unregistered claims, 
+and if you want to evaluate synchronously or asynchronously. Its structure looks like this
+
+```
+Jwt
+|__ .validate(compactJwt)
+    |__ .using(keyResolver, etc...)
+    |   |__ .now   // validates the JWT synchronously
+    |   |__ .async // returns the validation result in a Future
+    |__ apply[UnregisteredClaims]
+        |__ .using(keyResolver, etc...)
+            |__ .now   // validates the JWT synchronously
+            |__ .async // returns the validation result in a Future
+```
+
+So for example you could synchronously validate a JWT with some custom claims with
+
+```scala
+val customValidator = JwtValidator.fromSync[MyCustomClaimsClass] { 
+  case jwt if !jwt.claims.unregistered.thisTokenIsForAnAdmin => "Token needs to be for an admin"
+}
+Jwt.validate(compact)[MyCustomClaimsClass].using(es256Key, customValidator).now
+```

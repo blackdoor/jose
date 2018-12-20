@@ -57,17 +57,15 @@ class JwtSpec extends FlatSpec with Matchers {
     val signer = new ECDSASigner(nimbusJwk)
     signedJWT.sign(signer)
     val compact = signedJWT.serialize
-    Jwt.validate(compact).using(es256Key.toPublic)//(
-      //implicitly[Unmapper[Array[Byte], Claims[Unit]]],
-      //implicitly[Unmapper[Array[Byte], JwsHeader[Unit]]]
-    //)
+    val x: Unmapper[Array[Byte], JwsHeader[Unit]] = headerDeserializer
+    Jwt.validate(compact).using(es256Key.toPublic)
       .now shouldBe 'right
   }
 
   it should "fail for tokens before the nbf value" in {
     val claims = Claims(nbf = Some(Instant.now.plusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
-    //val x = headerDeserializer[Unit]
+    val x: Unmapper[Array[Byte], JwsHeader[Unit]] = headerDeserializer
     Jwt.validate(compact).using(es256Key).now shouldBe 'left
   }
 

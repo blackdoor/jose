@@ -24,8 +24,8 @@ dependsOn(RootProject(uri("git://github.com/blackdoor/jose.git#0.2.1")))
 Pretty simple: make a key, make something to sign, sign it.
 
 ```scala
-val claims = Claims(sub = Some("my user"), iss = Some("me"), exp = Some(Instant.now.plus(1, ChronoUnit.DAYS)))
 val key = P256KeyPair.generate
+val claims = Claims(sub = Some("my user"), iss = Some("me"), exp = Some(Instant.now.plus(1, ChronoUnit.DAYS)))
 
 val compactToken = Jwt.sign(claims, key)
 

@@ -1,10 +1,16 @@
 language: scala
 scala:
-- 2.12.7
+- 2.12
 
 if: branch = master OR tag = true
 
+install:
+  - sudo sh -c '(echo "#!/usr/bin/env sh" && curl -L https://github.com/lihaoyi/mill/releases/download/0.3.6/0.3.6) > /usr/local/bin/mill && chmod +x /usr/local/bin/mill'
+
 script:
-  - sbt coverageOn coverage test coverageReport
-  - bash <(curl -s https://codecov.io/bash)
-  - ./ci/publish-docs.sh
+  - mill --disable-ticker _.test
+
+cache:
+  directories:
+  - $HOME/build
+  - $HOME/.ivy2

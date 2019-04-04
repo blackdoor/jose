@@ -34,9 +34,9 @@ errorOrJwt.right.get.claims.sub // Some(my user)
 
 Currently supported JSON libraries:
 
-*  [x]  [Play JSON](https://mvnrepository.com/artifact/black.door/jose-json-play)
-*  [ ]  [Json4s](http://json4s.org/)
-*  [ ]  [Circe](https://github.com/circe/circe)
+* [x] [Play JSON](https://mvnrepository.com/artifact/black.door/jose-json-play)
+* [ ] [Json4s](http://json4s.org/)
+* [ ] [Circe](https://github.com/circe/circe)
 
 To add a JSON support, just import or mix in an implementation like `import black.door.jose.json.playjson.JsonSupport._`.
 

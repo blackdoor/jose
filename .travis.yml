@@ -2,15 +2,15 @@ language: scala
 scala:
 - 2.12
 
-if: branch = master OR tag = true
-
 install:
   - sudo sh -c '(echo "#!/usr/bin/env sh" && curl -L https://github.com/lihaoyi/mill/releases/download/0.3.6/0.3.6) > /usr/local/bin/mill && chmod +x /usr/local/bin/mill'
 
 script:
   - mill --disable-ticker _.test
+#  - mill --disable-ticker jose.json._.test
 
-cache:
-  directories:
-  - $HOME/build
-  - $HOME/.ivy2
+deploy:
+  provider: script
+  script: ci/deploy.sh
+  on:
+    tags: true

@@ -1,9 +1,8 @@
 # jose
 ![](https://img.shields.io/codacy/grade/177db012dc7548be9143a7562cd1d4bd.svg?style=flat-square)
-[![Codecov](https://img.shields.io/codecov/c/github/blackdoor/jose.svg?style=flat-square)](https://codecov.io/gh/blackdoor/jose)
 [![Travis (.com)](https://img.shields.io/travis/com/blackdoor/jose.svg?style=flat-square)](https://travis-ci.com/blackdoor/jose)
 [![Scaladoc](https://img.shields.io/badge/scaladoc-latest-blue.svg?style=flat-square)](https://blackdoor.github.io/jose/api/latest/black/door/jose/index.html)
-
+![Maven Central](https://img.shields.io/maven-central/v/black.door/jose_2.12.svg?style=flat-square)
 Extensible JOSE library for Scala.
 
 > Not yet implemented:  
@@ -14,10 +13,8 @@ Extensible JOSE library for Scala.
 > * Custom JOSE header parameters (custom JWT claims are supported)
 
 ## Installation
-Add the below to your `build.sbt` (replace the value after the pound with the desired version)
-```scala
-dependsOn(RootProject(uri("git://github.com/blackdoor/jose.git#0.2.1")))
-```
+
+The dependency is available on [Maven Central](https://mvnrepository.com/artifact/black.door/jose).
 
 ## Usage
 
@@ -35,8 +32,15 @@ errorOrJwt.right.get.claims.sub // Some(my user)
 
 ### Selecting a JSON implementation
 
-Work in progress, currently just `import black.door.jose.json.playjson.JsonSupport._` for Play JSON support.  
-Implement `Mapper` implicits to add support for new libraries.
+Currently supported JSON libraries:
+
+*  [x]  [Play JSON](https://mvnrepository.com/artifact/black.door/jose-json-play)
+*  [ ]  [Json4s](http://json4s.org/)
+*  [ ]  [Circe](https://github.com/circe/circe)
+
+To add a JSON support, just import or mix in an implementation like `import black.door.jose.json.playjson.JsonSupport._`.
+
+If your preferred library isn't supported, just implement `Mapper` implicits (or open an issue to request they be added).
 
 ### Async key resolution and validation checks
 
@@ -58,7 +62,7 @@ Jwt
     |__ .using(keyResolver, etc...)
     |   |__ .now   // validates the JWT synchronously
     |   |__ .async // returns the validation result in a Future
-    |__ apply[UnregisteredClaims]
+    |__ .apply[UnregisteredClaims]
         |__ .using(keyResolver, etc...)
             |__ .now   // validates the JWT synchronously
             |__ .async // returns the validation result in a Future

@@ -2,7 +2,7 @@
 ![](https://img.shields.io/codacy/grade/177db012dc7548be9143a7562cd1d4bd.svg?style=flat-square)
 [![Travis (.com)](https://img.shields.io/travis/com/blackdoor/jose.svg?style=flat-square)](https://travis-ci.com/blackdoor/jose)
 [![Scaladoc](https://img.shields.io/badge/scaladoc-latest-blue.svg?style=flat-square)](https://blackdoor.github.io/jose/api/latest/black/door/jose/index.html)
-![Maven Central](https://img.shields.io/maven-central/v/black.door/jose_2.12.svg?style=flat-square)
+![Maven Central](https://img.shields.io/maven-central/v/black.door/jose_2.12.svg?style=flat-square) 
 Extensible JOSE library for Scala.
 
 > Not yet implemented:  

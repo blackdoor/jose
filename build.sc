@@ -11,8 +11,8 @@ object jose extends ScalaModule with PublishModule { root =>
   def publishVersion = T.input(T.ctx().env("PUBLISH_VERSION"))
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:1.4.0",
-    ivy"com.typesafe.scala-logging::scala-logging:3.9.0",
+    ivy"org.typelevel::cats-core:1.6.0",
+    ivy"com.typesafe.scala-logging::scala-logging:3.9.2",
   )
 
   def pomSettings = PomSettings(
@@ -29,7 +29,7 @@ object jose extends ScalaModule with PublishModule { root =>
 
     def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.0.7",
-      ivy"com.nimbusds:nimbus-jose-jwt:6.0"
+      ivy"com.nimbusds:nimbus-jose-jwt:7.0.1"
     )
     def testFrameworks = List("org.scalatest.tools.Framework")
   }
@@ -41,7 +41,7 @@ object jose extends ScalaModule with PublishModule { root =>
       def scalaVersion = root.scalaVersion
 
       def moduleDeps = List(jose)
-      def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.6.10")
+      def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.7.2")
 
       def publishVersion = root.publishVersion
 

@@ -39,6 +39,19 @@ object jose extends BaseModule with PublishModule { root =>
 
   object json extends BaseModule {
 
+    object circe extends BaseModule with PublishModule {
+      lazy val circeVersion = "0.11.1"
+
+      def moduleDeps = List(jose)
+      def ivyDeps = Agg(
+        ivy"io.circe::circe-core:$circeVersion",
+        ivy"io.circe::circe-generic:$circeVersion",
+        ivy"io.circe::circe-parser:$circeVersion"
+      )
+
+      def pomSettings = root.pomSettings().copy(description = "Circe JSON support for blackdoor jose")
+    }
+
     object play extends BaseModule with PublishModule {
 
       def moduleDeps = List(jose)

@@ -1,12 +1,16 @@
 package black.door.jose.json.circe.jwk
 
-import black.door.jose.jwk.{EcJwk, Jwk, P256KeyPair, P256PublicKey}
-import io.circe.{Decoder, DecodingFailure}
+import black.door.jose.jwk.{EcJwk, Jwk, OctJwk, P256KeyPair, P256PublicKey}
+import io.circe.{Decoder, DecodingFailure, Encoder}
 import io.circe.generic.semiauto._
+import io.circe.syntax._
+import io.circe.generic.auto._
 
-object JwkJsonSupport {
+trait JwkJsonSupport {
   implicit val p256KeyPairDecoder: Decoder[P256KeyPair] = deriveDecoder
   implicit val p256PublicKeyDecoder: Decoder[P256PublicKey] = deriveDecoder
+  implicit val p256KeyPairEncoder: Encoder[P256KeyPair] = deriveEncoder
+  implicit val p256PublicKeyEncoder: Encoder[P256PublicKey] = deriveEncoder
 
   implicit val ecJwkDecoder: Decoder[EcJwk] = Decoder.instance { c =>
     c.downField("crv").as[String] match {
@@ -26,5 +30,9 @@ object JwkJsonSupport {
       case Right(_) => Left(DecodingFailure("JWK does not have a supported key type", c.history))
       case Left(_) => Left(DecodingFailure("JWK does not have a defined key type", c.history))
     }
+  }
+
+  implicit val jwkEncoder: Encoder[Jwk] = Encoder.instance {
+    case d: OctJwk => d.asJson
   }
 }

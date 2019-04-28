@@ -28,7 +28,7 @@ object jose extends BaseModule with PublishModule { root =>
   )
 
   object test extends Tests {
-    def moduleDeps = List(json.play)
+    def moduleDeps = List(json.play, json.circe)
 
     def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.0.7",
@@ -40,7 +40,7 @@ object jose extends BaseModule with PublishModule { root =>
   object json extends BaseModule {
 
     object circe extends BaseModule with PublishModule {
-      lazy val circeVersion = "0.11.1"
+      lazy val circeVersion = "0.12.0-M1"
 
       def moduleDeps = List(jose)
       def ivyDeps = Agg(

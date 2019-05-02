@@ -20,7 +20,7 @@ package object jwa {
   }
 
   object SignatureAlgorithms {
-    val all: Seq[SignatureAlgorithm] = ES256 +: HSAlgs.all
+    val all: Seq[SignatureAlgorithm] = HSAlgs.all ++ RSAlgs.all :+ ES256
   }
 
   // used with JWE alg

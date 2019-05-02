@@ -15,7 +15,8 @@ trait EcPublicKey extends EcJwk with PublicJwk {
 
   protected def spec: ECParameterSpec
   lazy val toJcaPublicKey = {
-    val publicKeySpec = new ECPublicKeySpec(new ECPoint(x.bigInteger, y.bigInteger), spec)
+    val publicKeySpec =
+      new ECPublicKeySpec(new ECPoint(x.bigInteger, y.bigInteger), spec)
     val keyFactory = KeyFactory.getInstance("EC")
     keyFactory.generatePublic(publicKeySpec).asInstanceOf[jECPublicKey]
   }
@@ -24,11 +25,12 @@ trait EcPublicKey extends EcJwk with PublicJwk {
 trait EcPrivateKey extends EcJwk with PrivateJwk {
   val kty = "EC"
   def d: BigInt
+  final def eccPrivateKey = d
 
   protected def spec: ECParameterSpec
   lazy val toJcaPrivateKey: jECPrivateKey = {
     val privateKeySpec = new ECPrivateKeySpec(d.bigInteger, spec)
-    val keyFactory = KeyFactory.getInstance("EC")
+    val keyFactory     = KeyFactory.getInstance("EC")
     keyFactory.generatePrivate(privateKeySpec).asInstanceOf[jECPrivateKey]
   }
 }
@@ -41,46 +43,56 @@ trait EcKeyPair extends EcPublicKey with EcPrivateKey {
 }
 
 case class P256PublicKey(
-                          x: BigInt,
-                          y: BigInt,
-                          alg: Option[String] = None,
-                          use: Option[String] = None,
-                          key_ops: Option[Seq[String]] = None,
-                          kid: Option[String] = None
-                        ) extends EcPublicKey {
+    x: BigInt,
+    y: BigInt,
+    alg: Option[String] = None,
+    use: Option[String] = None,
+    key_ops: Option[Seq[String]] = None,
+    kid: Option[String] = None
+  ) extends EcPublicKey {
   val crv = "P-256"
 
   def spec = P256KeyPair.P256ParameterSpec
 }
 
 case class P256KeyPair(
-                            d: BigInt,
-                            x: BigInt,
-                            y: BigInt,
-                            alg: Option[String] = None,
-                            use: Option[String] = None,
-                            key_ops: Option[Seq[String]] = None,
-                            kid: Option[String] = None
-                          ) extends EcKeyPair with EcPublicKey with EcPrivateKey {
+    d: BigInt,
+    x: BigInt,
+    y: BigInt,
+    alg: Option[String] = None,
+    use: Option[String] = None,
+    key_ops: Option[Seq[String]] = None,
+    kid: Option[String] = None
+  ) extends EcKeyPair
+    with EcPublicKey
+    with EcPrivateKey {
   val crv = "P-256"
 
   lazy val toPublic = P256PublicKey(x, y, alg, use, key_ops, kid)
-  def spec = P256KeyPair.P256ParameterSpec
+  def spec          = P256KeyPair.P256ParameterSpec
 }
 
 object P256KeyPair {
+
   def generate = {
     val keyGen = KeyPairGenerator.getInstance("EC")
     keyGen.initialize(256, new SecureRandom)
     val pair = keyGen.generateKeyPair
     P256KeyPair(
       pair.getPrivate.asInstanceOf[java.security.interfaces.ECPrivateKey].getS,
-      pair.getPublic.asInstanceOf[java.security.interfaces.ECPublicKey].getW.getAffineX,
-      pair.getPublic.asInstanceOf[java.security.interfaces.ECPublicKey].getW.getAffineY
+      pair.getPublic
+        .asInstanceOf[java.security.interfaces.ECPublicKey]
+        .getW
+        .getAffineX,
+      pair.getPublic
+        .asInstanceOf[java.security.interfaces.ECPublicKey]
+        .getW
+        .getAffineY
     )
   }
 
   val P256ParameterSpec = new ECParameterSpec(
+    // format: off
     new EllipticCurve(
       new ECFieldFp(new BigInteger("115792089210356248762697446949407573530086143415290314195533631308867097853951")),
       new BigInteger("115792089210356248762697446949407573530086143415290314195533631308867097853948"),
@@ -92,6 +104,6 @@ object P256KeyPair {
     ),
     new BigInteger("115792089210356248762697446949407573529996955224135760342422259061068512044369"),
     1
+    // format: on
   )
 }
-

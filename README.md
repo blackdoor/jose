@@ -9,7 +9,7 @@ Extensible JOSE library for Scala.
 > Not yet implemented:  
 > * JWK serialization
 > * JWE
-> * RSA
+> * RSA signing (RSA signature verification is supported)
 > * Less common key sizes for ECDSA
 > * Custom JOSE header parameters (custom JWT claims are supported)
 

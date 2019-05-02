@@ -29,7 +29,7 @@ object jose extends ScalaModule with PublishModule { root =>
 
     def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.0.7",
-      ivy"com.nimbusds:nimbus-jose-jwt:7.0.1"
+      ivy"com.nimbusds:nimbus-jose-jwt:7.1"
     )
     def testFrameworks = List("org.scalatest.tools.Framework")
   }
@@ -41,7 +41,7 @@ object jose extends ScalaModule with PublishModule { root =>
       def scalaVersion = root.scalaVersion
 
       def moduleDeps = List(jose)
-      def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.7.2")
+      def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.7.3")
 
       def publishVersion = root.publishVersion
 

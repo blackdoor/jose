@@ -1,17 +1,18 @@
-package black.door.jose.jwt
+package black.door.jose.jwt.circe
 
 import java.time.Instant
 import java.util.Base64
 
 import black.door.jose.json.circe.JsonSupport._
 import black.door.jose.jwk.P256KeyPair
+import black.door.jose.jwt.{Check, Claims, Jwt, JwtValidator}
 import com.nimbusds.jose.crypto.{ECDSASigner, ECDSAVerifier}
 import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
 import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
+import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
 import org.scalatest.{FlatSpec, Matchers}
-import io.circe.generic.semiauto._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

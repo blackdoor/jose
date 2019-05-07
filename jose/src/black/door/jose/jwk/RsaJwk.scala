@@ -5,8 +5,8 @@ import java.security.spec.RSAPublicKeySpec
 sealed trait RsaJwk extends Jwk
 
 case class RsaPublicKey(
-    modulus: BigInt,
-    exponent: BigInt,
+    n: BigInt,
+    e: BigInt,
     alg: Option[String] = None,
     use: Option[String] = None,
     key_ops: Option[Seq[String]] = None,
@@ -15,8 +15,8 @@ case class RsaPublicKey(
     with PublicJwk {
   val kty = "RSA"
 
-  final def n = modulus
-  final def e = exponent
+  final def modulus  = n
+  final def exponent = e
 
   lazy val toJcaPublicKey = {
     val spec    = new RSAPublicKeySpec(modulus.bigInteger, exponent.bigInteger)

@@ -1,7 +1,7 @@
 package black.door.jose.jws
 
+import black.door.jose.Mapper
 import black.door.jose.json.common._
-import black.door.jose.json.playjson.JsonSupport._
 import black.door.jose.jwk.{OctJwk, RsaPublicKey}
 import com.nimbusds.jose.crypto.{MACSigner, MACVerifier, _}
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
@@ -12,7 +12,10 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-class JwsSpec extends WordSpec with Matchers with EitherValues {
+trait JwsSpec extends WordSpec with Matchers with EitherValues {
+  implicit def headerSerializer: Mapper[JwsHeader, Array[Byte]]
+  implicit def headerDeserializer: Mapper[Array[Byte], JwsHeader]
+
   "HS signatures" should {
 
     val hsKey = OctJwk.generate(256)
@@ -21,12 +24,12 @@ class JwsSpec extends WordSpec with Matchers with EitherValues {
       val jws     = Jws(JwsHeader("HS256"), "test data".getBytes)
       val compact = jws.sign(hsKey)
 
-      val verifier = new MACVerifier(hsKey.k)
+      val verifier = new MACVerifier(hsKey.k.toArray)
       JWSObject.parse(compact).verify(verifier) shouldBe true
     }
 
     "validate correctly" in {
-      val signer  = new MACSigner(hsKey.k)
+      val signer  = new MACSigner(hsKey.k.toArray)
       val payload = "test data"
       val jwsObj  = new JWSObject(new JWSHeader(JWSAlgorithm.HS256), new Payload(payload))
       jwsObj.sign(signer)

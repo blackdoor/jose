@@ -5,10 +5,13 @@ import scalalib._
 
 val devInfo = Developer("kag0", "Nathan Fischer", "https://github.com/kag0", Some("blackdoor"), Some("https://github.com/blackdoor"))
 
-object jose extends ScalaModule with PublishModule { root =>
+trait BaseModule extends ScalaModule {
   def scalaVersion = "2.12.8"
-
+  def scalacOptions = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
   def publishVersion = T.input(T.ctx().env("PUBLISH_VERSION"))
+}
+
+object jose extends BaseModule with PublishModule { root =>
 
   def ivyDeps = Agg(
     ivy"org.typelevel::cats-core:1.6.0",
@@ -25,7 +28,7 @@ object jose extends ScalaModule with PublishModule { root =>
   )
 
   object test extends Tests {
-    def moduleDeps = List(json.play)
+    def moduleDeps = List(json.play, json.circe)
 
     def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.0.7",
@@ -34,16 +37,25 @@ object jose extends ScalaModule with PublishModule { root =>
     def testFrameworks = List("org.scalatest.tools.Framework")
   }
 
-  object json extends ScalaModule {
-    def scalaVersion = root.scalaVersion
+  object json extends BaseModule {
 
-    object play extends ScalaModule with PublishModule {
-      def scalaVersion = root.scalaVersion
+    object circe extends BaseModule with PublishModule {
+      lazy val circeVersion = "0.12.0-M1"
+
+      def moduleDeps = List(jose)
+      def ivyDeps = Agg(
+        ivy"io.circe::circe-core:$circeVersion",
+        ivy"io.circe::circe-generic:$circeVersion",
+        ivy"io.circe::circe-parser:$circeVersion"
+      )
+
+      def pomSettings = root.pomSettings().copy(description = "Circe JSON support for blackdoor jose")
+    }
+
+    object play extends BaseModule with PublishModule {
 
       def moduleDeps = List(jose)
       def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.7.3")
-
-      def publishVersion = root.publishVersion
 
       def pomSettings = root.pomSettings().copy(description = "Play JSON support for blackdoor jose")
     }

@@ -9,6 +9,6 @@ import black.door.jose.json.circe._
 trait JwsJsonSupport extends JwkJsonSupport {
   implicit val headerEncoder: Encoder[JwsHeader] = deriveEncoder
   implicit val headerDecoder: Decoder[JwsHeader] = deriveDecoder
-  implicit val headerSerializer = jsonSerializer[JwsHeader]
-  implicit val headerDeserializer = jsonDeserializer[JwsHeader]
+  implicit val headerSerializer                  = jsonSerializer[JwsHeader]
+  implicit val headerDeserializer                = jsonDeserializer[JwsHeader]
 }

@@ -1,11 +1,11 @@
 package black.door.jose.jwt
 
 import black.door.jose.Mapper
-import black.door.jose.json.circe.JsonSupport
+import black.door.jose.json.circe
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
-class CirceJsonJwtSpec extends JwtSpec with JsonSupport {
+class CirceJwtSpec extends JwtSpec with circe.JsonSupport {
 
   implicit val decoder: Decoder[MyCustomClaimsClass] = deriveDecoder
   implicit val encoder: Encoder[MyCustomClaimsClass] = deriveEncoder

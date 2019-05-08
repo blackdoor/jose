@@ -6,13 +6,6 @@
 
 Extensible JOSE library for Scala.
 
-> Not yet implemented:  
-> * JWK serialization
-> * JWE
-> * RSA signing (RSA signature verification is supported)
-> * Less common key sizes for ECDSA
-> * Custom JOSE header parameters (custom JWT claims are supported)
-
 ## Installation
 
 The dependency is available on [Maven Central](https://mvnrepository.com/artifact/black.door/jose).
@@ -77,3 +70,10 @@ val customValidator = JwtValidator.fromSync[MyCustomClaimsClass] {
 }
 Jwt.validate(compact)[MyCustomClaimsClass].using(es256Key, customValidator).now
 ```
+
+> Not yet implemented:  
+> * JWK serialization partly implemented
+> * JWE
+> * RSA signing (RSA signature verification is supported)
+> * Less common key sizes for ECDSA
+> * Custom JOSE header parameters (custom JWT claims are supported)

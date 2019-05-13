@@ -1,5 +1,7 @@
 package black.door.jose.json.circe.jwt
 
+import java.time.Instant
+
 import black.door.jose.jwt.Claims
 import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.syntax._
@@ -8,6 +10,11 @@ import io.circe.generic.semiauto._
 
 trait JwtJsonSupport {
   private val unregisteredObjectKey = "unregistered"
+
+  implicit private[this] val instantEncoder: Encoder[Instant] =
+    Encoder.encodeLong.contramap[Instant](_.getEpochSecond)
+  implicit private[this] val instantDecoder: Decoder[Instant] =
+    Decoder.decodeLong.map(Instant.ofEpochSecond)
 
   implicit val unitDecoder: Decoder[Unit] = new Decoder[Unit] {
     final def apply(c: HCursor): Decoder.Result[Unit] = Right(())

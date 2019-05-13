@@ -1,7 +1,7 @@
 package black.door.jose.jwt
 
 import java.time.Instant
-import java.util.Base64
+import java.util.{Base64, Date}
 
 import black.door.jose.Mapper
 import black.door.jose.jwk.P256KeyPair
@@ -39,7 +39,7 @@ trait JwtSpec extends FlatSpec with Matchers {
   }
 
   it should "sign with ES256" in {
-    val claims  = Claims(jti = Some("test token id"))
+    val claims  = Claims(jti = Some("test token id"), exp = Some(Instant.now.plusSeconds(600)))
     val compact = Jwt.sign(claims, es256Key)
 
     val encoder = Base64.getUrlEncoder
@@ -52,14 +52,21 @@ trait JwtSpec extends FlatSpec with Matchers {
 
   "JWT verification" should "parse and verify with ES256" in {
     val encoder = Base64.getUrlEncoder
-    val nimbusJwk = ECKey.parse(s"""{"kty":"EC","crv":"P-256","d":"${encoder.encodeToString(
-      es256Key.d.toByteArray
-    )}","x":"${encoder.encodeToString(es256Key.x.toByteArray)}","y":"${encoder.encodeToString(
-      es256Key.y.toByteArray
-    )}"}""")
+
+    val nimbusJwk = ECKey.parse(
+      s"""{"kty":"EC","crv":"P-256","d":"${encoder.encodeToString(
+        es256Key.d.toByteArray
+      )}","x":"${encoder.encodeToString(es256Key.x.toByteArray)}","y":"${encoder
+        .encodeToString(
+          es256Key.y.toByteArray
+        )}"}"""
+    )
+
     val claimsSet = new JWTClaimsSet.Builder()
       .jwtID("test token id")
+      .expirationTime(Date.from(Instant.now.plusSeconds(600)))
       .build
+
     val signedJWT = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.ES256).build, claimsSet)
     val signer    = new ECDSASigner(nimbusJwk)
     signedJWT.sign(signer)
@@ -77,6 +84,7 @@ trait JwtSpec extends FlatSpec with Matchers {
   it should "fail for tokens after the exp value" in {
     val claims  = Claims(exp = Some(Instant.now.minusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
+
     Jwt.validate(compact).using(es256Key).now shouldBe 'left
   }
 

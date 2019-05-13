@@ -1,5 +1,7 @@
 package black.door.jose.json.playjson.jwt
 
+import java.time.Instant
+
 import black.door.jose.jwt.Claims
 import black.door.jose.json.playjson._
 import play.api.libs.json._
@@ -10,6 +12,11 @@ trait JwtJsonSupport {
 
   implicit val unitReads  = Reads[Unit](_ => JsSuccess(Unit))
   implicit val unitWrites = OWrites[Unit](_ => JsObject.empty)
+
+  implicit private[this] val instantFormat = Format[Instant](
+    implicitly[Reads[Long]].map(Instant.ofEpochSecond),
+    Writes[Instant](inst => JsNumber(inst.getEpochSecond))
+  )
 
   private val unitClaimsReads = Json.reads[Claims[Unit]]
   private val unregisteredInjector = Reads(
@@ -43,4 +50,5 @@ trait JwtJsonSupport {
   implicit def claimsDeserializer[C](implicit r: Reads[Claims[C]]) =
     jsonDeserializer[Claims[C]]
 }
+
 object JwtJsonSupport extends JwtJsonSupport

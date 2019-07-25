@@ -6,6 +6,7 @@ import java.util.{Base64, Date}
 import black.door.jose.Mapper
 import black.door.jose.jwk.P256KeyPair
 import black.door.jose.jws.JwsHeader
+import black.door.jose.test.{left, right}
 import com.nimbusds.jose.crypto.{ECDSASigner, ECDSAVerifier}
 import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
@@ -72,27 +73,27 @@ trait JwtSpec extends FlatSpec with Matchers {
     signedJWT.sign(signer)
     val compact = signedJWT.serialize
 
-    Jwt.validate(compact).using(es256Key.toPublic).now shouldBe 'right
+    Jwt.validate(compact).using(es256Key.toPublic).now shouldBe right
   }
 
   it should "fail for tokens before the nbf value" in {
     val claims  = Claims(nbf = Some(Instant.now.plusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validate(compact).using(es256Key).now shouldBe 'left
+    Jwt.validate(compact).using(es256Key).now shouldBe left
   }
 
   it should "fail for tokens after the exp value" in {
     val claims  = Claims(exp = Some(Instant.now.minusSeconds(60)))
     val compact = Jwt.sign(claims, es256Key)
 
-    Jwt.validate(compact).using(es256Key).now shouldBe 'left
+    Jwt.validate(compact).using(es256Key).now shouldBe left
   }
 
   it should "fail for the wrong signature" in {
     val key2    = P256KeyPair.generate
     val compact = generateToken
     Jwt.validate("")[Unit]
-    Jwt.validate(compact).using(key2).now shouldBe 'left
+    Jwt.validate(compact).using(key2).now shouldBe left
   }
 
   import Check._
@@ -113,7 +114,7 @@ trait JwtSpec extends FlatSpec with Matchers {
       sub = Some("sub")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe left
   }
 
   it should "fail for the wrong aud value" in {
@@ -123,7 +124,7 @@ trait JwtSpec extends FlatSpec with Matchers {
       sub = Some("sub")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe left
   }
 
   it should "fail for the wrong sub value" in {
@@ -133,7 +134,7 @@ trait JwtSpec extends FlatSpec with Matchers {
       sub = Some("miss")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe left
   }
 
   it should "fail for missing iss value" in {
@@ -142,7 +143,7 @@ trait JwtSpec extends FlatSpec with Matchers {
       sub = Some("sub")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe left
   }
 
   it should "fail for missing aud value" in {
@@ -151,7 +152,7 @@ trait JwtSpec extends FlatSpec with Matchers {
       sub = Some("sub")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe left
   }
 
   it should "fail for missing sub value" in {
@@ -160,7 +161,7 @@ trait JwtSpec extends FlatSpec with Matchers {
       aud = Some("aud")
     )
     val compact = Jwt.sign(claims, es256Key)
-    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe 'left
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe left
   }
 
   it should "work with custom claims" in {
@@ -175,7 +176,7 @@ trait JwtSpec extends FlatSpec with Matchers {
     Jwt
       .validate(compact)[MyCustomClaimsClass]
       .using(es256Key, customValidator)
-      .now shouldBe 'left
+      .now shouldBe left
 
     val claims2  = Claims(unregistered = MyCustomClaimsClass(true))
     val compact2 = Jwt.sign(claims2, es256Key)
@@ -183,7 +184,7 @@ trait JwtSpec extends FlatSpec with Matchers {
     Jwt
       .validate(compact2)[MyCustomClaimsClass]
       .using(es256Key, customValidator)
-      .now shouldBe 'right
+      .now shouldBe right
   }
 }
 

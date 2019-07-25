@@ -1,4 +1,3 @@
-// build.sc
 import mill._
 import mill.scalalib.publish.{Developer, License, PomSettings, VersionControl}
 import scalalib._
@@ -10,11 +9,11 @@ trait BaseModule extends CrossScalaModule {
   def publishVersion = T.input(T.ctx().env("PUBLISH_VERSION"))
 }
 
-object jose extends Cross[JoseModule]("2.12.8", "2.13.0-RC2")
+object jose extends Cross[JoseModule]("2.12.8", "2.13.0")
 class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule { root =>
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:1.6.0",
+    ivy"org.typelevel::cats-core:2.0.0-M4",
     ivy"com.typesafe.scala-logging::scala-logging:3.9.2",
   )
 
@@ -29,20 +28,22 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
 
   object test extends Tests {
     def moduleDeps = List(json.play(crossScalaVersion), json.circe(crossScalaVersion))
+    def scalacOptions = T(super.scalacOptions().filterNot(Set("-Xfatal-warnings").contains))
 
     def ivyDeps = Agg(
-      ivy"org.scalatest::scalatest:3.0.7",
+      ivy"org.scalatest::scalatest:3.0.8",
       ivy"com.nimbusds:nimbus-jose-jwt:7.1"
     )
+
     def testFrameworks = List("org.scalatest.tools.Framework")
   }
 
   object json extends Module {
 
-    object circe extends Cross[CirceModule]("2.12.8", "2.13.0-RC2")
+    object circe extends Cross[CirceModule]("2.12.8", "2.13.0")
     class CirceModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
-      lazy val circeVersion = "0.12.0-M1"
+      lazy val circeVersion = "0.12.0-M4"
 
       def moduleDeps = List(jose(crossScalaVersion))
       def ivyDeps = Agg(
@@ -54,11 +55,11 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
       def pomSettings = root.pomSettings().copy(description = "Circe JSON support for blackdoor jose")
     }
 
-    object play extends Cross[PlayModule]("2.12.8", "2.13.0-RC2")
+    object play extends Cross[PlayModule]("2.12.8", "2.13.0")
     class PlayModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
       def moduleDeps = List(jose(crossScalaVersion))
-      def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.7.3")
+      def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.7.4")
 
       def pomSettings = root.pomSettings().copy(description = "Play JSON support for blackdoor jose")
     }

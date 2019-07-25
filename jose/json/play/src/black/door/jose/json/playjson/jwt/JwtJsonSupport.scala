@@ -10,7 +10,7 @@ trait JwtJsonSupport {
 
   private val unregisteredObjectKey = "unregistered"
 
-  implicit val unitReads  = Reads[Unit](_ => JsSuccess(Unit))
+  implicit val unitReads  = Reads[Unit](_ => JsSuccess(()))
   implicit val unitWrites = OWrites[Unit](_ => JsObject.empty)
 
   implicit private[this] val instantFormat = Format[Instant](

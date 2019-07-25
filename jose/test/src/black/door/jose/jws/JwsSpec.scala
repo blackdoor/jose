@@ -8,6 +8,8 @@ import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader, JWSObject, Payload}
 import org.scalatest.{EitherValues, Matchers, WordSpec}
 
+import black.door.jose.test._
+
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
@@ -45,7 +47,7 @@ trait JwsSpec extends WordSpec with Matchers with EitherValues {
 
       val parsedJws =
         Await.result(Jws.validate[String](compact, OctJwk.generate(256)), Duration.Inf)
-      parsedJws shouldBe 'left
+      parsedJws shouldBe left
     }
   }
 
@@ -86,7 +88,7 @@ trait JwsSpec extends WordSpec with Matchers with EitherValues {
       )
 
       val jws = Await.result(Jws.validate[String](compact, blackdoorKey), Duration.Inf)
-      jws shouldBe 'left
+      jws shouldBe left
     }
   }
 }

@@ -1,4 +1,5 @@
 import mill._
+import mill.define.{Segment, Segments}
 import mill.scalalib.publish.{Developer, License, PomSettings, VersionControl}
 import scalalib._
 
@@ -7,6 +8,8 @@ val devInfo = Developer("kag0", "Nathan Fischer", "https://github.com/kag0", Som
 trait BaseModule extends CrossScalaModule {
   def scalacOptions = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
   def publishVersion = T.input(T.ctx().env("PUBLISH_VERSION"))
+
+  def artifactName = T(Segments(millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross]):_*).parts.mkString("-"))
 }
 
 object jose extends Cross[JoseModule]("2.12.8", "2.13.0")

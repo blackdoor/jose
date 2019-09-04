@@ -16,7 +16,7 @@ object jose extends Cross[JoseModule]("2.12.8", "2.13.0")
 class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule { root =>
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:2.0.0-M4",
+    ivy"org.typelevel::cats-core:2.0.0-RC2",
     ivy"com.typesafe.scala-logging::scala-logging:3.9.2",
   )
 
@@ -35,7 +35,7 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
 
     def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.0.8",
-      ivy"com.nimbusds:nimbus-jose-jwt:7.1"
+      ivy"com.nimbusds:nimbus-jose-jwt:7.8"
     )
 
     def testFrameworks = List("org.scalatest.tools.Framework")
@@ -46,7 +46,7 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
     object circe extends Cross[CirceModule]("2.12.8", "2.13.0")
     class CirceModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
-      lazy val circeVersion = "0.12.0-M4"
+      lazy val circeVersion = "0.12.0-RC4"
 
       def moduleDeps = List(jose(crossScalaVersion))
       def ivyDeps = Agg(

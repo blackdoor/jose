@@ -5,6 +5,9 @@ import scalalib._
 
 val devInfo = Developer("kag0", "Nathan Fischer", "https://github.com/kag0", Some("blackdoor"), Some("https://github.com/blackdoor"))
 
+val `2.12` = "2.12.10"
+val `2.13` = "2.13.0"
+
 trait BaseModule extends CrossScalaModule {
   def scalacOptions = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
   def publishVersion = T.input(T.ctx().env("PUBLISH_VERSION"))
@@ -12,11 +15,11 @@ trait BaseModule extends CrossScalaModule {
   def artifactName = T(Segments(millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross]):_*).parts.mkString("-"))
 }
 
-object jose extends Cross[JoseModule]("2.12.8", "2.13.0")
+object jose extends Cross[JoseModule](`2.12`, `2.13`)
 class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule { root =>
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:2.0.0-RC2",
+    ivy"org.typelevel::cats-core:2.0.0",
     ivy"com.typesafe.scala-logging::scala-logging:3.9.2",
   )
 
@@ -43,10 +46,10 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
 
   object json extends Module {
 
-    object circe extends Cross[CirceModule]("2.12.8", "2.13.0")
+    object circe extends Cross[CirceModule](`2.12`, `2.13`)
     class CirceModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
-      lazy val circeVersion = "0.12.0-RC4"
+      lazy val circeVersion = "0.12.1"
 
       def moduleDeps = List(jose(crossScalaVersion))
       def ivyDeps = Agg(
@@ -58,7 +61,7 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
       def pomSettings = root.pomSettings().copy(description = "Circe JSON support for blackdoor jose")
     }
 
-    object play extends Cross[PlayModule]("2.12.8", "2.13.0")
+    object play extends Cross[PlayModule](`2.12`, `2.13`)
     class PlayModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
       def moduleDeps = List(jose(crossScalaVersion))

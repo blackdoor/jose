@@ -18,9 +18,9 @@ Pretty simple: make a key, make something to sign, sign it.
 val key = P256KeyPair.generate
 val claims = Claims(sub = Some("my user"), iss = Some("me"), exp = Some(Instant.now.plus(1, ChronoUnit.DAYS)))
 
-val compactToken = Jwt.sign(claims, key)
+val compactToken = Jwt.sign(claims, key.withAlg(Some("ES256")))
 
-val errorOrJwt = Jwt.validate(compactToken).using(key, Check.iss("me")).now
+val errorOrJwt = Jwt.validate(compactToken).using(key, Check.iss(_ == "me")).now
 errorOrJwt.right.get.claims.sub // Some(my user)
 ```
 

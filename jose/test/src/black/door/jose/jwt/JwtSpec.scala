@@ -24,7 +24,7 @@ trait JwtSpec extends FlatSpec with Matchers {
   implicit def payloadUnitDeserializer: Mapper[Array[Byte], Claims[Unit]]
   implicit def payloadCustomDeserializer: Mapper[Array[Byte], Claims[MyCustomClaimsClass]]
 
-  val es256Key = P256KeyPair.generate.copy(alg = Some("ES256"))
+  val es256Key = P256KeyPair.generate.withAlg(Some("ES256"))
 
   def generateToken = {
     val claims = Claims(jti = Some("test token id"))

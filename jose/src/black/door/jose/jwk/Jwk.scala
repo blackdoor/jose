@@ -8,6 +8,8 @@ trait Jwk {
   def key_ops: Option[Seq[String]]
   def alg: Option[String]
   def kid: Option[String]
+
+  def withAlg(alg: Option[String]): Jwk
 }
 
 object Jwk {

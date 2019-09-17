@@ -24,4 +24,6 @@ case class RsaPublicKey(
 
     factory.generatePublic(spec)
   }
+
+  def withAlg(alg: Option[String]) = copy(alg = alg)
 }

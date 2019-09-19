@@ -53,6 +53,8 @@ case class P256PublicKey(
   val crv = "P-256"
 
   def spec = P256KeyPair.P256ParameterSpec
+
+  def withAlg(alg: Option[String]) = copy(alg = alg)
 }
 
 case class P256KeyPair(
@@ -70,6 +72,8 @@ case class P256KeyPair(
 
   lazy val toPublic = P256PublicKey(x, y, alg, use, key_ops, kid)
   def spec          = P256KeyPair.P256ParameterSpec
+
+  def withAlg(alg: Option[String]) = copy(alg = alg)
 }
 
 object P256KeyPair {

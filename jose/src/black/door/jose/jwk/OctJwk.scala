@@ -11,6 +11,8 @@ case class OctJwk(
     kid: Option[String] = None
   ) extends Jwk {
   val kty = "oct"
+
+  def withAlg(alg: Option[String]) = copy(alg = alg)
 }
 
 object OctJwk {

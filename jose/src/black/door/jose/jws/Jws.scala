@@ -33,12 +33,7 @@ trait Jws[A] {
     val signerTuple           = (key, header, signingInput)
     val definedAlgs           = algorithms.filter(_.sign.isDefinedAt(signerTuple))
 
-    val oddAlgs = definedAlgs.filterNot(_.alg.toLowerCase == header.alg.toLowerCase)
-    if (oddAlgs.nonEmpty)
-      logger.warn(
-        s"Signing algorithms ${oddAlgs.map(_.alg).mkString(", ")} " +
-          s"reported being applicable for ${header.alg}. This may indicate an improperly implemented SignatureAlgorithm."
-      )
+    Jws.logOddAlgs(definedAlgs, header)
 
     InputSigner.keyHeaderPreSigner
       .orElse(
@@ -91,6 +86,15 @@ object Jws {
       signature    <- Try(decoder.decode(signatureC)).toEither.left.map(_.getMessage)
     } yield (signingInput, header, payload, signature)
 
+  private def logOddAlgs(definedAlgs: Seq[SignatureAlgorithm], header: JwsHeader) = {
+    val oddAlgs = definedAlgs.filterNot(_.alg.toLowerCase == header.alg.toLowerCase)
+    if (oddAlgs.nonEmpty)
+      logger.warn(
+        s"Signing algorithms ${oddAlgs.map(_.alg).mkString(", ")} " +
+          s"reported being applicable for ${header.alg}. This may indicate an improperly implemented SignatureAlgorithm."
+      )
+  }
+
   def validate[A](
       compact: String,
       keyResolver: KeyResolver[A],
@@ -108,14 +112,7 @@ object Jws {
         validatorTuple = (key, header, signingInput, signature)
         definedAlgs    = algorithms.filter(_.validate.isDefinedAt(validatorTuple))
 
-        _ = {
-          val oddAlgs = definedAlgs.filterNot(_.alg.toLowerCase == header.alg.toLowerCase)
-          if (oddAlgs.nonEmpty)
-            logger.warn(
-              s"Signing algorithms ${oddAlgs.map(_.alg).mkString(", ")} " +
-                s"reported being applicable for ${header.alg}. This may indicate an improperly implemented SignatureAlgorithm."
-            )
-        }
+        _ = logOddAlgs(definedAlgs, header)
 
         jws <- EitherT
           .fromOption[Future](

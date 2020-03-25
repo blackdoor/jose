@@ -1,17 +1,29 @@
 package black.door.jose.jws
 
-import cats.data.EitherT
-import cats.implicits._
 import black.door.jose.jwk.Jwk
-import scala.language.implicitConversions
+import cats.data.EitherT
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
+import scala.language.implicitConversions
 
 trait KeyResolver[A] {
   def resolve(header: JwsHeader, payload: A): EitherT[Future, String, Jwk]
 }
 
 object KeyResolver {
-  implicit def fromSingleKey[A](key: Jwk)(implicit ex: ExecutionContext): KeyResolver[A] =
-    (header: JwsHeader, payload: A) => EitherT.rightT(key)
+
+  implicit def fromSingleKey[A](key: Jwk): KeyResolver[A] =
+    (_, _) => EitherT[Future, String, Jwk](Future.successful(Right(key)))
+
+  implicit def fromKeys[A](keys: Seq[Jwk]): KeyResolver[A] =
+    (header, _) =>
+      EitherT(
+        Future.successful(
+          keys
+            .collectFirst {
+              case key if key.kid == header.kid => key
+            }
+            .toRight(s"no key found in set for kid ${header.kid}")
+        )
+      )
 }

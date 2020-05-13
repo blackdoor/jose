@@ -16,11 +16,21 @@ Pretty simple: make a key, make something to sign, sign it.
 
 ```scala
 val key = P256KeyPair.generate
-val claims = Claims(sub = Some("my user"), iss = Some("me"), exp = Some(Instant.now.plus(1, ChronoUnit.DAYS)))
+val claims = Claims(
+  sub = Some("my user"), 
+  iss = Some("me"), 
+  exp = Some(Instant.now.plus(1, ChronoUnit.DAYS))
+)
 
-val compactToken = Jwt.sign(claims, key.withAlg(Some("ES256")))
+val token = Jwt.sign(
+  claims, 
+  key.withAlg(Some("ES256"))
+)
 
-val errorOrJwt = Jwt.validate(compactToken).using(key, Check.iss(_ == "me")).now
+val errorOrJwt = Jwt
+  .validate(token)
+  .using(key, Check.iss(_ == "me"))
+  .now
 errorOrJwt.right.get.claims.sub // Some(my user)
 ```
 
@@ -65,10 +75,15 @@ Jwt
 So for example you could synchronously validate a JWT with some custom claims with
 
 ```scala
-val customValidator = JwtValidator.fromSync[MyCustomClaimsClass] { 
-  case jwt if !jwt.claims.unregistered.thisTokenIsForAnAdmin => "Token needs to be for an admin"
-}
-Jwt.validate(compact)[MyCustomClaimsClass].using(es256Key, customValidator).now
+val customValidator = 
+  JwtValidator.fromSync[MyCustomClaimsClass] { 
+    case jwt if !jwt.claims.unregistered.thisTokenIsForAnAdmin => 
+      "Token needs to be for an admin"
+  }
+  
+Jwt.validate(compact)[MyCustomClaimsClass]
+  .using(es256Key, customValidator)
+  .now
 ```
 
 > Not yet implemented:  

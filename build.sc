@@ -6,7 +6,7 @@ import scalalib._
 val devInfo = Developer("kag0", "Nathan Fischer", "https://github.com/kag0", Some("blackdoor"), Some("https://github.com/blackdoor"))
 
 val `2.12` = "2.12.10"
-val `2.13` = "2.13.0"
+val `2.13` = "2.13.2"
 
 trait BaseModule extends CrossScalaModule {
   def scalacOptions = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")

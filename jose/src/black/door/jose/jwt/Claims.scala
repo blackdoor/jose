@@ -2,7 +2,7 @@ package black.door.jose.jwt
 
 import java.time.Instant
 
-case class Claims[UnregisteredClaims](
+case class Claims[+UnregisteredClaims](
                             iss: Option[String] = None,
                             sub: Option[String] = None,
                             aud: Option[String] = None,

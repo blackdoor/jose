@@ -13,7 +13,7 @@ import scala.collection.immutable.Seq
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-trait Jws[A] {
+trait Jws[+A] {
   def header: JwsHeader
   def payload: A
 

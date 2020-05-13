@@ -3,6 +3,7 @@ package black.door.jose.jwt
 import java.time.{Clock, Instant}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.language.implicitConversions
 
 object JwtValidator {
 
@@ -15,9 +16,9 @@ object JwtValidator {
   private def iatMessage(maybeIat: Option[Instant]) =
     maybeIat.map(iat => s"It was issued at $iat.").getOrElse("")
 
-  def defaultValidator[C](clock: Clock = Clock.systemDefaultZone): JwtValidator[C] = {
+  def defaultValidator(clock: Clock = Clock.systemDefaultZone) = {
     val now = Instant.now(clock)
-    JwtValidator.fromSync {
+    JwtValidator.fromSync[Any] {
       case Jwt(_, claims) if claims.exp.exists(_.isBefore(now)) =>
         s"Token expired at ${claims.exp.get}.${iatMessage(claims.iat)} It is now $now."
       case Jwt(_, claims) if claims.nbf.exists(_.isAfter(now)) =>

@@ -9,7 +9,6 @@ import black.door.jose.Mapper
 import black.door.jose.jwa.{SignatureAlgorithm, SignatureAlgorithms}
 import black.door.jose.jwk.Jwk
 import black.door.jose.jws._
-import black.door.jose.jwt.JwtValidator.JwtValidatorOps
 
 import scala.collection.immutable.Seq
 import scala.concurrent.duration.Duration
@@ -77,7 +76,7 @@ object Jwt {
 
     case class using(
         keyResolver: KeyResolver[Claims[C]],
-        jwtValidator: JwtValidator[C] = JwtValidator.empty[C],
+        jwtValidator: JwtValidator[C] = JwtValidator.empty,
         fallbackJwtValidator: JwtValidator[C] = JwtValidator.defaultValidator(),
         algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
       )(

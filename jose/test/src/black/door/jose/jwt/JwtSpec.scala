@@ -164,13 +164,28 @@ trait JwtSpec extends FlatSpec with Matchers {
     Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe left
   }
 
-  it should "work with custom claims" in {
-    val customValidator = JwtValidator.fromSync[MyCustomClaimsClass] {
-      case jwt if !jwt.claims.unregistered.thisTokenIsForAnAdmin =>
-        "Token needs to be for an admin"
-    }
+  it should "pass for correct claim values" in {
+    val claims = Claims(
+      iss = Some("iss"),
+      aud = Some("aud"),
+      sub = Some("sub")
+    )
+    val compact = Jwt.sign(claims, es256Key)
+    Jwt.validate(compact).using(es256Key, jwtValidator = validations).now shouldBe right
+  }
 
-    val claims  = Claims(unregistered = MyCustomClaimsClass(false))
+  it should "work with custom claims" in {
+    val customValidator =
+      Check
+        .sub(_ == "you")
+        .orElse(JwtValidator.fromSync[MyCustomClaimsClass] {
+          case jwt if !jwt.claims.unregistered.thisTokenIsForAnAdmin =>
+            "Token needs to be for an admin"
+        })
+        .orElse(Check.iss(_ == "me"))
+
+    val claims =
+      Claims(iss = Some("me"), sub = Some("you"), unregistered = MyCustomClaimsClass(false))
     val compact = Jwt.sign(claims, es256Key)
 
     Jwt
@@ -178,7 +193,8 @@ trait JwtSpec extends FlatSpec with Matchers {
       .using(es256Key, customValidator)
       .now shouldBe left
 
-    val claims2  = Claims(unregistered = MyCustomClaimsClass(true))
+    val claims2 =
+      Claims(iss = Some("me"), sub = Some("you"), unregistered = MyCustomClaimsClass(true))
     val compact2 = Jwt.sign(claims2, es256Key)
 
     Jwt

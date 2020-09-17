@@ -44,6 +44,7 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
   )
 
   object test extends Test
+}
 
   object json extends Module {
 
@@ -92,6 +93,3 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
       }
     }
   }
-
-}
-

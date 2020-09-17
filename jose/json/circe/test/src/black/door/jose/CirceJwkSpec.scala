@@ -1,6 +1,7 @@
-package black.door.jose.jwk
+package black.door.jose
 
 import black.door.jose.json.circe
+import black.door.jose.jwk.Jwk
 import io.circe.Decoder
 import io.circe.parser._
 import io.circe.syntax._

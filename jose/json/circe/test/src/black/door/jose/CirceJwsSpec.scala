@@ -1,4 +1,4 @@
-package black.door.jose.jws
+package black.door.jose
 
 import black.door.jose.json.circe
 

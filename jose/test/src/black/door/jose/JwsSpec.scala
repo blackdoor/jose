@@ -1,14 +1,13 @@
-package black.door.jose.jws
+package black.door.jose
 
-import black.door.jose.Mapper
 import black.door.jose.json.common._
 import black.door.jose.jwk.{OctJwk, RsaPublicKey}
-import com.nimbusds.jose.crypto.{MACSigner, MACVerifier, _}
+import black.door.jose.jws.{Jws, JwsHeader}
+import black.door.jose.test._
+import com.nimbusds.jose.crypto.{MACSigner, MACVerifier, RSASSASigner}
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader, JWSObject, Payload}
 import org.scalatest.{EitherValues, Matchers, WordSpec}
-
-import black.door.jose.test._
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global

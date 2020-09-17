@@ -1,5 +1,7 @@
-package black.door.jose.jwk
+package black.door.jose
+
 import black.door.jose.json.playjson
+import black.door.jose.jwk.Jwk
 import play.api.libs.json.Json
 
 class PlayJsonJwkSpec extends JwkSpec with playjson.JsonSupport {

@@ -1,9 +1,9 @@
-package black.door.jose.jwt
+package black.door.jose
 
-import black.door.jose.Mapper
 import black.door.jose.json.circe
-import io.circe.{Decoder, Encoder}
+import black.door.jose.jwt.Claims
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 class CirceJwtSpec extends JwtSpec with circe.JsonSupport {
 

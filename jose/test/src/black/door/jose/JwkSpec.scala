@@ -1,6 +1,6 @@
-package black.door.jose.jwk
+package black.door.jose
 
-import black.door.jose.Mapper
+import black.door.jose.jwk.{Jwk, OctJwk, P256KeyPair, RsaPublicKey}
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
 import com.nimbusds.jose.jwk.{ECKey, OctetSequenceKey, RSAKey}
 import org.scalatest.{EitherValues, FlatSpec, Matchers}

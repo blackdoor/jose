@@ -1,7 +1,7 @@
-package black.door.jose.jwt
+package black.door.jose
 
-import black.door.jose.Mapper
 import black.door.jose.json.playjson
+import black.door.jose.jwt.Claims
 import play.api.libs.json.Json
 
 class PlayJsonJwtSpec extends JwtSpec with playjson.JsonSupport {

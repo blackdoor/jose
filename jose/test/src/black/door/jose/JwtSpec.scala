@@ -1,11 +1,11 @@
-package black.door.jose.jwt
+package black.door.jose
 
 import java.time.Instant
 import java.util.{Base64, Date}
 
-import black.door.jose.Mapper
 import black.door.jose.jwk.P256KeyPair
 import black.door.jose.jws.JwsHeader
+import black.door.jose.jwt.{Check, Claims, Jwt, JwtValidator}
 import black.door.jose.test.{left, right}
 import com.nimbusds.jose.crypto.{ECDSASigner, ECDSAVerifier}
 import com.nimbusds.jose.jwk.ECKey

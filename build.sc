@@ -21,7 +21,7 @@ trait BaseModule extends CrossScalaModule {
     developers = List(devInfo)
   )
 
-  def artifactName = T(Segments(millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross]):_*).parts.mkString("-"))
+  def artifactName = Segments(millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross]):_*).parts.mkString("-")
 
   trait Test extends Tests {
     def scalacOptions = T(super.scalacOptions().filterNot(_ == "-Xfatal-warnings"))
@@ -40,56 +40,44 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
 
   def ivyDeps = Agg(
     ivy"org.typelevel::cats-core:2.0.0",
-    ivy"com.typesafe.scala-logging::scala-logging:3.9.2",
+    ivy"com.typesafe.scala-logging::scala-logging:3.9.2"
   )
 
   object test extends Test
 }
 
-  object json extends Module {
+object json extends Module {
 
-    object circe extends Cross[CirceModule](`2.12`, `2.13`)
-    class CirceModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
+  abstract class JsonModule(moduleName: String) extends BaseModule {
+    def artifactName = "jose-" + super.artifactName()
+    def pomSettings = super.pomSettings().copy(description = s"$moduleName JSON support for blackdoor jose")
 
-      lazy val circeVersion = "0.12.1"
-
-      def moduleDeps = List(jose(crossScalaVersion))
-      def ivyDeps = Agg(
-        ivy"io.circe::circe-core:$circeVersion",
-        ivy"io.circe::circe-generic:$circeVersion",
-        ivy"io.circe::circe-parser:$circeVersion"
-      )
-
-      def pomSettings = super.pomSettings().copy(description = "Circe JSON support for blackdoor jose")
-
-      object test extends Test {
-        def moduleDeps = super.moduleDeps :+ jose(crossScalaVersion).test
-      }
-    }
-
-    object play extends Cross[PlayModule](`2.12`, `2.13`)
-    class PlayModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
-
-      def moduleDeps = List(jose(crossScalaVersion))
-      def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.7.4")
-
-      def pomSettings = super.pomSettings().copy(description = "Play JSON support for blackdoor jose")
-
-      object test extends Test {
-        def moduleDeps = super.moduleDeps :+ jose(crossScalaVersion).test
-      }
-    }
-
-    object ninny extends Cross[NinnyModule](`2.13`)
-    class NinnyModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
-
-      def moduleDeps = List(jose(crossScalaVersion))
-      def ivyDeps = Agg(ivy"io.github.kag0::ninny:0.1.0")
-
-      def pomSettings = super.pomSettings().copy(description = "ninny JSON support for blackdoor jose")
-
-      object test extends Test {
-        def moduleDeps = super.moduleDeps :+ jose(crossScalaVersion).test
-      }
+    object test extends Test {
+      def moduleDeps = super.moduleDeps :+ jose(crossScalaVersion).test
     }
   }
+
+  object circe extends Cross[CirceModule](`2.12`, `2.13`)
+  class CirceModule(val crossScalaVersion: String) extends JsonModule("Circe") with PublishModule {
+    def moduleDeps = List(jose(crossScalaVersion))
+    lazy val circeVersion = "0.12.1"
+
+    def ivyDeps = Agg(
+      ivy"io.circe::circe-core:$circeVersion",
+      ivy"io.circe::circe-generic:$circeVersion",
+      ivy"io.circe::circe-parser:$circeVersion"
+    )
+  }
+
+  object play extends Cross[PlayModule](`2.12`, `2.13`)
+  class PlayModule(val crossScalaVersion: String) extends JsonModule("Play") with PublishModule {
+    def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.7.4")
+    def moduleDeps = List(jose(crossScalaVersion))
+  }
+
+  object ninny extends Cross[NinnyModule](`2.13`)
+  class NinnyModule(val crossScalaVersion: String) extends JsonModule("ninny") with PublishModule {
+    def ivyDeps = Agg(ivy"io.github.kag0::ninny:0.1.0")
+    def moduleDeps = List(jose(crossScalaVersion))
+  }
+}

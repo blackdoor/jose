@@ -77,7 +77,7 @@ object json extends Module {
 
   object ninny extends Cross[NinnyModule](`2.13`)
   class NinnyModule(val crossScalaVersion: String) extends JsonModule("ninny") with PublishModule {
-    def ivyDeps = Agg(ivy"io.github.kag0::ninny:0.1.0")
+    def ivyDeps = Agg(ivy"io.github.kag0::ninny:0.1.3")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 }

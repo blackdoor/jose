@@ -14,8 +14,8 @@ trait JwkJsonSupport {
       case JsString(encoded) => JsSuccess(BigInt(Base64.getUrlDecoder.decode(encoded)))
       case _                 => JsError("BigInt value was not a base64url string")
     },
-    Writes(
-      int => JsString(Base64.getUrlEncoder.withoutPadding.encodeToString(int.toByteArray))
+    Writes(int =>
+      JsString(Base64.getUrlEncoder.withoutPadding.encodeToString(int.toByteArray))
     )
   )
 
@@ -53,8 +53,8 @@ trait JwkJsonSupport {
       case JsString(encoded) => JsSuccess(Base64.getUrlDecoder.decode(encoded).toIndexedSeq)
       case _                 => JsError("Binary value was not a base64url string")
     },
-    Writes(
-      bytes => JsString(Base64.getUrlEncoder.withoutPadding.encodeToString(bytes.toArray))
+    Writes(bytes =>
+      JsString(Base64.getUrlEncoder.withoutPadding.encodeToString(bytes.toArray))
     )
   )
 

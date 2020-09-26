@@ -1,15 +1,10 @@
 language: scala
 scala:
-- 2.12
+- "2.13"
 dist: xenial
 
-install:
-  - curl -L -o ~/bin/mill https://github.com/lihaoyi/mill/releases/download/0.3.6/0.3.6 && chmod +x ~/bin/mill
-  - export PATH=~/bin/mill:$PATH
-  #- sudo sh -c '(echo "#!/usr/bin/env sh" && curl -L https://github.com/lihaoyi/mill/releases/download/0.3.6/0.3.6) > /usr/local/bin/mill && chmod +x /usr/local/bin/mill'
-
 script:
-  - mill --disable-ticker _._.test
+  - ./mill --disable-ticker __.test
 #  - mill --disable-ticker jose.json._.test
 
 deploy:

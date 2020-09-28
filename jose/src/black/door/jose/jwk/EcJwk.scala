@@ -4,6 +4,7 @@ import java.math.BigInteger
 import java.security.interfaces.{ECPrivateKey => jECPrivateKey, ECPublicKey => jECPublicKey}
 import java.security.spec._
 import java.security.{KeyFactory, KeyPairGenerator, SecureRandom}
+import scala.collection.immutable.Seq
 
 sealed trait EcJwk extends Jwk
 
@@ -14,6 +15,7 @@ trait EcPublicKey extends EcJwk with PublicJwk {
   def y: BigInt
 
   protected def spec: ECParameterSpec
+
   lazy val toJcaPublicKey = {
     val publicKeySpec =
       new ECPublicKeySpec(new ECPoint(x.bigInteger, y.bigInteger), spec)
@@ -28,6 +30,7 @@ trait EcPrivateKey extends EcJwk with PrivateJwk {
   final def eccPrivateKey = d
 
   protected def spec: ECParameterSpec
+
   lazy val toJcaPrivateKey: jECPrivateKey = {
     val privateKeySpec = new ECPrivateKeySpec(d.bigInteger, spec)
     val keyFactory     = KeyFactory.getInstance("EC")

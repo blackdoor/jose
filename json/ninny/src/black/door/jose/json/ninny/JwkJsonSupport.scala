@@ -4,10 +4,11 @@ import java.security.KeyException
 import java.util.Base64
 
 import black.door.jose.jwk._
-import io.github.kag0.ninny.{FromJson, _}
 import io.github.kag0.ninny.ast.{JsonObject, JsonString}
+import io.github.kag0.ninny._
 
-import scala.collection.immutable.ArraySeq
+import scala.collection.compat.immutable._
+import scala.collection.immutable.IndexedSeq
 import scala.language.implicitConversions
 import scala.util.{Failure, Try}
 

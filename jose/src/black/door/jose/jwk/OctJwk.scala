@@ -1,7 +1,7 @@
 package black.door.jose.jwk
 
 import java.security.SecureRandom
-import scala.collection.immutable.IndexedSeq
+import scala.collection.immutable._
 
 case class OctJwk(
     k: IndexedSeq[Byte],

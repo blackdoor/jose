@@ -1,6 +1,9 @@
 package black.door.jose.jwk
+
 import java.security.KeyFactory
 import java.security.spec.RSAPublicKeySpec
+
+import scala.collection.immutable.Seq
 
 sealed trait RsaJwk extends Jwk
 

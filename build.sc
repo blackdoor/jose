@@ -39,7 +39,7 @@ object jose extends Cross[JoseModule](`2.12`, `2.13`)
 class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:2.0.0",
+    ivy"org.typelevel::cats-core:2.2.0",
     ivy"com.typesafe.scala-logging::scala-logging:3.9.2"
   )
 
@@ -75,9 +75,9 @@ object json extends Module {
     def moduleDeps = List(jose(crossScalaVersion))
   }
 
-  object ninny extends Cross[NinnyModule](`2.13`)
+  object ninny extends Cross[NinnyModule](`2.12`, `2.13`)
   class NinnyModule(val crossScalaVersion: String) extends JsonModule("ninny") with PublishModule {
-    def ivyDeps = Agg(ivy"io.github.kag0::ninny:0.1.3")
+    def ivyDeps = Agg(ivy"io.github.kag0::ninny:0.2.1", ivy"org.scala-lang.modules::scala-collection-compat:2.2.0")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 }

@@ -1,6 +1,6 @@
 package black.door.jose.jwa
 import java.nio.charset.StandardCharsets
-import java.security.InvalidKeyException
+import java.security.{InvalidKeyException, MessageDigest}
 import java.util
 
 import black.door.jose.jwk.OctJwk
@@ -15,8 +15,7 @@ sealed case class HSAlg(hashBits: Int) extends SignatureAlgorithm {
     case (key: OctJwk, header, signingInput, signature) if alg == header.alg =>
       val mac = Mac.getInstance(jcaAlgorithm)
       mac.init(new SecretKeySpec(key.k.toArray, jcaAlgorithm))
-      util.Arrays
-        .equals(signature, mac.doFinal(signingInput.getBytes(StandardCharsets.US_ASCII)))
+      MessageDigest.isEqual(mac.doFinal(signingInput.getBytes(StandardCharsets.US_ASCII)), signature)
   }
 
   val sign = {

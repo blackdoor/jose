@@ -71,14 +71,34 @@ object Jwt {
   private val sadSpasticLittleEc =
     ExecutionContext.fromExecutorService(Executors.newCachedThreadPool)
 
-  sealed trait TypedValidation[C] {
-    def compact: String
+  def validate(compact: String) = new UnitValidation(compact)
 
-    case class using(
+  protected class UnitValidation(protected val compact: String) extends TypedValidation[Unit] {
+    self =>
+
+    def apply[A] = new TypedValidation[A] {
+      protected def compact = self.compact
+    }
+  }
+
+  sealed trait TypedValidation[C] {
+    protected def compact: String
+
+    def using(
         keyResolver: KeyResolver[Claims[C]],
         jwtValidator: JwtValidator[C] = JwtValidator.empty,
         fallbackJwtValidator: JwtValidator[C] = JwtValidator.defaultValidator(),
         algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
+      )(
+        implicit payloadDeserializer: Mapper[Array[Byte], Claims[C]],
+        headerDeserializer: Mapper[Array[Byte], JwsHeader]
+      ) = new Using(keyResolver, jwtValidator, fallbackJwtValidator, algorithms)
+
+    protected class Using(
+        keyResolver: KeyResolver[Claims[C]],
+        jwtValidator: JwtValidator[C],
+        fallbackJwtValidator: JwtValidator[C],
+        algorithms: Seq[SignatureAlgorithm]
       )(
         implicit payloadDeserializer: Mapper[Array[Byte], Claims[C]],
         headerDeserializer: Mapper[Array[Byte], JwsHeader]
@@ -96,15 +116,5 @@ object Jwt {
       def async(implicit ec: ExecutionContext) =
         validate(compact, keyResolver, jwtValidator, fallbackJwtValidator, algorithms)
     }
-  }
-
-  case class validate(compact: String) extends TypedValidation[Unit] {
-    self =>
-    //def registeredClaims = new TypedValidation[Unit]
-    //def unregisteredClaims[A] = new TypedValidation[A]
-
-    def apply[A] = new TypedValidation[A] {
-      def compact = self.compact
-    }
-  }
+  }  
 }

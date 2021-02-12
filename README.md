@@ -3,6 +3,7 @@
 [![Travis (.com)](https://img.shields.io/travis/com/blackdoor/jose.svg?style=flat-square)](https://travis-ci.com/blackdoor/jose)
 [![Scaladoc](https://img.shields.io/badge/scaladoc-latest-blue.svg?style=flat-square)](https://blackdoor.github.io/jose/api/latest/black/door/jose/index.html)
 [![Maven Central](https://img.shields.io/maven-central/v/black.door/jose_2.12.svg?style=flat-square)](https://mvnrepository.com/artifact/black.door/jose)
+![Gitter](https://img.shields.io/gitter/room/blackdoor/jose?style=flat-square)
 
 Extensible JOSE library for Scala.
 

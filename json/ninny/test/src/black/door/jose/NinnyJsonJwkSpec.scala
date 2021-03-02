@@ -5,8 +5,8 @@ import black.door.jose.jwk.Jwk
 import io.github.kag0.ninny._
 
 class NinnyJsonJwkSpec extends JwkSpec with JsonSupport {
-  def jwkSerializer: Mapper[Jwk, String] = k => Right(Json.render(k.toSomeJson))
+  def jwkSerializer: StringSerializer[Jwk] = k => Json.render(k.toSomeJson)
 
-  implicit def jwkDeserializer: Mapper[String, Jwk] =
+  implicit def jwkDeserializer: StringDeserializer[Jwk] =
     Json.parse(_).to[Jwk].toEither.left.map(_.getMessage)
 }

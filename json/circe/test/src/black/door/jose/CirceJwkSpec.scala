@@ -7,6 +7,6 @@ import io.circe.parser._
 import io.circe.syntax._
 
 class CirceJwkSpec extends JwkSpec with circe.JsonSupport {
-  def jwkSerializer   = key => Right(key.asJson.dropNullValues.noSpaces)
+  def jwkSerializer   = key => key.asJson.dropNullValues.noSpaces
   def jwkDeserializer = json => decode(json)(Decoder[Jwk]).left.map(_.toString)
 }

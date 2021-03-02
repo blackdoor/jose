@@ -1,11 +1,11 @@
 package black.door.jose.jwt
 
+import black.door.jose.{ByteDeserializer, ByteSerializer}
+
 import java.security.KeyException
 import java.util.concurrent.{Executors, TimeUnit}
-
 import cats.data.{EitherT, OptionT}
 import cats.implicits._
-import black.door.jose.Mapper
 import black.door.jose.jwa.{SignatureAlgorithm, SignatureAlgorithms}
 import black.door.jose.jwk.Jwk
 import black.door.jose.jws._
@@ -27,8 +27,8 @@ object Jwt {
       key: Jwk,
       algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
     )(
-      implicit headerSerializer: Mapper[JwsHeader, Array[Byte]],
-      payloadSerializer: Mapper[Claims[PC], Array[Byte]]
+      implicit headerSerializer: ByteSerializer[JwsHeader],
+      payloadSerializer: ByteSerializer[Claims[PC]]
     ) = {
     val alg = key.alg.getOrElse(
       throw new KeyException(
@@ -59,8 +59,8 @@ object Jwt {
       fallbackJwtValidator: JwtValidator[C] = JwtValidator.defaultValidator(),
       algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
     )(
-      implicit payloadDeserializer: Mapper[Array[Byte], Claims[C]],
-      headerDeserializer: Mapper[Array[Byte], JwsHeader],
+      implicit payloadDeserializer: ByteDeserializer[Claims[C]],
+      headerDeserializer: ByteDeserializer[JwsHeader],
       ec: ExecutionContext
     ): Future[Either[String, Jwt[C]]] =
     EitherT(Jws.validate[Claims[C]](compact, keyResolver, algorithms)).flatMap { jws =>
@@ -90,8 +90,8 @@ object Jwt {
         fallbackJwtValidator: JwtValidator[C] = JwtValidator.defaultValidator(),
         algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
       )(
-        implicit payloadDeserializer: Mapper[Array[Byte], Claims[C]],
-        headerDeserializer: Mapper[Array[Byte], JwsHeader]
+        implicit payloadDeserializer: ByteDeserializer[Claims[C]],
+        headerDeserializer: ByteDeserializer[JwsHeader]
       ) = new Using(keyResolver, jwtValidator, fallbackJwtValidator, algorithms)
 
     protected class Using(
@@ -100,8 +100,8 @@ object Jwt {
         fallbackJwtValidator: JwtValidator[C],
         algorithms: Seq[SignatureAlgorithm]
       )(
-        implicit payloadDeserializer: Mapper[Array[Byte], Claims[C]],
-        headerDeserializer: Mapper[Array[Byte], JwsHeader]
+        implicit payloadDeserializer: ByteDeserializer[Claims[C]],
+        headerDeserializer: ByteDeserializer[JwsHeader]
       ) {
 
       def now = Await.result(
@@ -116,5 +116,5 @@ object Jwt {
       def async(implicit ec: ExecutionContext) =
         validate(compact, keyResolver, jwtValidator, fallbackJwtValidator, algorithms)
     }
-  }  
+  }
 }

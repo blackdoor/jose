@@ -4,7 +4,7 @@
 
 ### Ensuring JOSE header is well formed JSON
 
-Mapper[Array[Byte], JwsHeader] implementation
+ByteDeserializer[JwsHeader] implementation
 
 ### Ensure all required fields are understood (`crit` header value)
 

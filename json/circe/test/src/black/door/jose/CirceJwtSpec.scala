@@ -10,13 +10,13 @@ class CirceJwtSpec extends JwtSpec with circe.JsonSupport {
   implicit val decoder: Decoder[MyCustomClaimsClass] = deriveDecoder
   implicit val encoder: Encoder[MyCustomClaimsClass] = deriveEncoder
 
-  val payloadUnitSerializer = implicitly[Mapper[Claims[Unit], Array[Byte]]]
+  val payloadUnitSerializer = implicitly[ByteSerializer[Claims[Unit]]]
 
   val payloadCustomSerializer =
-    implicitly[Mapper[Claims[MyCustomClaimsClass], Array[Byte]]]
+    implicitly[ByteSerializer[Claims[MyCustomClaimsClass]]]
 
-  val payloadUnitDeserializer = implicitly[Mapper[Array[Byte], Claims[Unit]]]
+  val payloadUnitDeserializer = implicitly[ByteDeserializer[Claims[Unit]]]
 
   val payloadCustomDeserializer =
-    implicitly[Mapper[Array[Byte], Claims[MyCustomClaimsClass]]]
+    implicitly[ByteDeserializer[Claims[MyCustomClaimsClass]]]
 }

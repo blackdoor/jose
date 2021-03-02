@@ -14,8 +14,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
 trait JwsSpec extends WordSpec with Matchers with EitherValues {
-  implicit def headerSerializer: Mapper[JwsHeader, Array[Byte]]
-  implicit def headerDeserializer: Mapper[Array[Byte], JwsHeader]
+  implicit def headerSerializer: ByteSerializer[JwsHeader]
+  implicit def headerDeserializer: ByteDeserializer[JwsHeader]
 
   "HS signatures" should {
 

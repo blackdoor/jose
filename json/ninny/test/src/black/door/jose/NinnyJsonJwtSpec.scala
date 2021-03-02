@@ -6,8 +6,8 @@ import io.github.kag0.ninny.Auto._
 
 class NinnyJsonJwtSpec extends JwtSpec with JsonSupport {
 
-  val payloadUnitSerializer     = implicitly[Mapper[Claims[Unit], Array[Byte]]]
-  val payloadUnitDeserializer   = implicitly[Mapper[Array[Byte], Claims[Unit]]]
-  val payloadCustomDeserializer = implicitly[Mapper[Array[Byte], Claims[MyCustomClaimsClass]]]
-  val payloadCustomSerializer   = implicitly[Mapper[Claims[MyCustomClaimsClass], Array[Byte]]]
+  val payloadUnitSerializer     = implicitly[ByteSerializer[Claims[Unit]]]
+  val payloadUnitDeserializer   = implicitly[ByteDeserializer[Claims[Unit]]]
+  val payloadCustomDeserializer = implicitly[ByteDeserializer[Claims[MyCustomClaimsClass]]]
+  val payloadCustomSerializer   = implicitly[ByteSerializer[Claims[MyCustomClaimsClass]]]
 }

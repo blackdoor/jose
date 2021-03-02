@@ -1,6 +1,6 @@
 package black.door.jose.json.ninny
 
-import black.door.jose.Mapper
+import black.door.jose.{ByteDeserializer, ByteSerializer}
 import black.door.jose.jwt._
 import io.github.kag0.ninny.ast.JsonObject
 import io.github.kag0.ninny.{FromJson, ToJson, ToSomeJson, ToSomeJsonObject}
@@ -29,11 +29,11 @@ trait JwtJsonSupport {
 
   implicit def claimsSerializer[C](
       implicit to: ToSomeJson[Claims[C]]
-    ): Mapper[Claims[C], Array[Byte]] =
+    ): ByteSerializer[Claims[C]] =
     jsonSerializer[Claims[C]]
 
   implicit def claimsDeserializer[C](
       implicit from: FromJson[Claims[C]]
-    ): Mapper[Array[Byte], Claims[C]] =
+    ): ByteDeserializer[Claims[C]] =
     jsonDeserializer[Claims[C]]
 }

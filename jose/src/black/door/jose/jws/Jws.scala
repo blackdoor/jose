@@ -1,8 +1,7 @@
 package black.door.jose.jws
 
 import java.util.Base64
-
-import black.door.jose.Mapper
+import black.door.jose.{ByteDeserializer, ByteSerializer}
 import black.door.jose.jwa.{SignatureAlgorithm, SignatureAlgorithms}
 import black.door.jose.jwk.Jwk
 import cats.data.EitherT
@@ -23,15 +22,15 @@ trait Jws[+A] {
       key: Jwk,
       algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
     )(
-      implicit headerSerializer: Mapper[JwsHeader, Array[Byte]],
-      payloadSerializer: Mapper[A, Array[Byte]]
+      implicit headerSerializer: ByteSerializer[JwsHeader],
+      payloadSerializer: ByteSerializer[A]
     ): String = {
-    val encoder               = Base64.getUrlEncoder.withoutPadding
-    val Right(headerCompact)  = headerSerializer(header).map(encoder.encodeToString)
-    val Right(payloadCompact) = payloadSerializer(payload).map(encoder.encodeToString)
-    val signingInput          = s"$headerCompact.$payloadCompact"
-    val signerTuple           = (key, header, signingInput)
-    val definedAlgs           = algorithms.filter(_.sign.isDefinedAt(signerTuple))
+    val encoder        = Base64.getUrlEncoder.withoutPadding
+    val headerCompact  = encoder.encodeToString(headerSerializer(header))
+    val payloadCompact = encoder.encodeToString(payloadSerializer(payload))
+    val signingInput   = s"$headerCompact.$payloadCompact"
+    val signerTuple    = (key, header, signingInput)
+    val definedAlgs    = algorithms.filter(_.sign.isDefinedAt(signerTuple))
 
     Jws.logOddAlgs(definedAlgs, header)
 
@@ -68,8 +67,8 @@ object Jws {
   private def parse[A](
       compact: String
     )(
-      implicit payloadDeserializer: Mapper[Array[Byte], A],
-      headerDeserializer: Mapper[Array[Byte], JwsHeader]
+      implicit payloadDeserializer: ByteDeserializer[A],
+      headerDeserializer: ByteDeserializer[JwsHeader]
     ): Either[String, (String, JwsHeader, A, Array[Byte])] =
     for {
       arr <- {
@@ -100,8 +99,8 @@ object Jws {
       keyResolver: KeyResolver[A],
       algorithms: Seq[SignatureAlgorithm] = SignatureAlgorithms.all
     )(
-      implicit payloadDeserializer: Mapper[Array[Byte], A],
-      headerDeserializer: Mapper[Array[Byte], JwsHeader],
+      implicit payloadDeserializer: ByteDeserializer[A],
+      headerDeserializer: ByteDeserializer[JwsHeader],
       ec: ExecutionContext
     ): Future[Either[String, Jws[A]]] =
     (

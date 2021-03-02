@@ -6,14 +6,14 @@ import com.nimbusds.jose.jwk.{ECKey, OctetSequenceKey, RSAKey}
 import org.scalatest.{EitherValues, FlatSpec, Matchers}
 
 trait JwkSpec extends FlatSpec with Matchers with EitherValues {
-  def jwkSerializer: Mapper[Jwk, String]
-  implicit def jwkDeserializer: Mapper[String, Jwk]
+  def jwkSerializer: StringSerializer[Jwk]
+  implicit def jwkDeserializer: StringDeserializer[Jwk]
 
   "Symmetric JWKs" should "serialize and deserialize" in {
     val initialKey = OctJwk
       .generate(256)
       .copy(use = Some("enc"), alg = Some("HS256"), kid = Some("1"))
-    val initialJson = jwkSerializer(initialKey).right.value
+    val initialJson = jwkSerializer(initialKey)
 
     val intermediateKey  = OctetSequenceKey.parse(initialJson)
     val intermediateJson = intermediateKey.toJSONObject.toJSONString
@@ -26,7 +26,7 @@ trait JwkSpec extends FlatSpec with Matchers with EitherValues {
   "ES JWKs" should "serialize and deserialize" in {
     val initialKey = P256KeyPair.generate
       .copy(use = Some("sig"), alg = Some("ES256"), kid = Some("1"))
-    val initialJson = jwkSerializer(initialKey).right.value
+    val initialJson = jwkSerializer(initialKey)
 
     val intermediateKey  = ECKey.parse(initialJson)
     val intermediateJson = intermediateKey.toJSONObject.toJSONString
@@ -46,7 +46,7 @@ trait JwkSpec extends FlatSpec with Matchers with EitherValues {
       use = Some("sig")
     )
 
-    val initialJson = jwkSerializer(initialKey).right.value
+    val initialJson = jwkSerializer(initialKey)
 
     val intermediateKey  = RSAKey.parse(initialJson)
     val intermediateJson = intermediateKey.toJSONObject.toJSONString

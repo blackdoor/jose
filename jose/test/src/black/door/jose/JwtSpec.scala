@@ -17,12 +17,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait JwtSpec extends FlatSpec with Matchers {
 
-  implicit def headerSerializer: Mapper[JwsHeader, Array[Byte]]
-  implicit def headerDeserializer: Mapper[Array[Byte], JwsHeader]
-  implicit def payloadUnitSerializer: Mapper[Claims[Unit], Array[Byte]]
-  implicit def payloadCustomSerializer: Mapper[Claims[MyCustomClaimsClass], Array[Byte]]
-  implicit def payloadUnitDeserializer: Mapper[Array[Byte], Claims[Unit]]
-  implicit def payloadCustomDeserializer: Mapper[Array[Byte], Claims[MyCustomClaimsClass]]
+  implicit def headerSerializer: ByteSerializer[JwsHeader]
+  implicit def headerDeserializer: ByteDeserializer[JwsHeader]
+  implicit def payloadUnitSerializer: ByteSerializer[Claims[Unit]]
+  implicit def payloadCustomSerializer: ByteSerializer[Claims[MyCustomClaimsClass]]
+  implicit def payloadUnitDeserializer: ByteDeserializer[Claims[Unit]]
+  implicit def payloadCustomDeserializer: ByteDeserializer[Claims[MyCustomClaimsClass]]
 
   val es256Key = P256KeyPair.generate.withAlg(Some("ES256"))
 

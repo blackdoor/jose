@@ -4,6 +4,7 @@ scala:
 dist: xenial
 
 script:
+  - ./mill --disable-ticker __.compile
   - ./mill --disable-ticker __.test
 #  - mill --disable-ticker jose.json._.test
 

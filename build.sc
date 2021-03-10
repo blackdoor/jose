@@ -36,7 +36,7 @@ trait BaseModule extends CrossScalaModule {
 }
 
 object jose extends Cross[JoseModule](`2.12`, `2.13`)
-class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
+class  JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
   def ivyDeps = Agg(
     ivy"org.typelevel::cats-core:2.2.0",
@@ -80,4 +80,9 @@ object json extends Module {
     def ivyDeps = Agg(ivy"io.github.kag0::ninny:0.2.10", ivy"org.scala-lang.modules::scala-collection-compat:2.2.0")
     def moduleDeps = List(jose(crossScalaVersion))
   }
+}
+
+object docs extends ScalaModule {
+  def scalaVersion = `2.13`
+  def moduleDeps = List(json.ninny(`2.13`))
 }

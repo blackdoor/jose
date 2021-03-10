@@ -1,3 +1,7 @@
+<script type='module' src="https://kag0.github.io/sauce/sauce.js">
+<h1>If you're reading this, click <a href="https://blackdoor.github.io/jose">HERE</a></h1>
+</script>
+
 # jose
 [![](https://img.shields.io/codacy/grade/177db012dc7548be9143a7562cd1d4bd.svg?style=flat-square)](https://app.codacy.com/project/blackdoor/jose/dashboard)
 [![Travis (.com)](https://img.shields.io/travis/com/blackdoor/jose.svg?style=flat-square)](https://travis-ci.com/blackdoor/jose)
@@ -16,25 +20,11 @@ The dependency is available on [Maven Central](https://mvnrepository.com/artifac
 
 Pretty simple: make a key, make something to sign, sign it.
 
-```scala
-val key = P256KeyPair.generate
-val claims = Claims(
-  sub = Some("my user"), 
-  iss = Some("me"), 
-  exp = Some(Instant.now.plus(1, ChronoUnit.DAYS))
-)
-
-val token = Jwt.sign(
-  claims, 
-  key.withAlg(Some("ES256"))
-)
-
-val errorOrJwt = Jwt
-  .validate(token)
-  .using(key, Check.iss(_ == "me"))
-  .now
-errorOrJwt.right.get.claims.sub // Some(my user)
-```
+<sauce-code 
+    repo='blackdoor/jose' 
+    file='docs/src/black/door/jose/docs/SampleCode.scala'
+    lines='15:36'
+></sauce-code>
 
 ### Selecting a JSON implementation
 
@@ -77,17 +67,11 @@ Jwt
 
 So for example you could synchronously validate a JWT with some custom claims with
 
-```scala
-val customValidator = 
-  JwtValidator.fromSync[MyCustomClaimsClass] { 
-    case jwt if !jwt.claims.unregistered.thisTokenIsForAnAdmin => 
-      "Token needs to be for an admin"
-  }
-  
-Jwt.validate(compact)[MyCustomClaimsClass]
-  .using(es256Key, customValidator)
-  .now
-```
+<sauce-code
+repo='blackdoor/jose'
+file='docs/src/black/door/jose/docs/SampleCode.scala'
+lines='64:76'
+></sauce-code>
 
 > Not yet implemented:  
 > * JWK serialization partly implemented

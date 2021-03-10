@@ -28,11 +28,11 @@ trait JwkJsonSupport {
       obj \ "crv" match {
         case JsDefined(JsString("P-256")) =>
           obj \ "d" match {
-            case JsDefined(_)  => p256KeyPairReads.reads(obj)
-            case JsUndefined() => p256PublicKeyReads.reads(obj)
+            case JsDefined(_) => p256KeyPairReads.reads(obj)
+            case _            => p256PublicKeyReads.reads(obj)
           }
-        case JsDefined(_)  => JsError(path \ "crv", "JWK does not have a supported curve")
-        case JsUndefined() => JsError(path \ "crv", "JWK does not have a defined curve")
+        case JsDefined(_) => JsError(path \ "crv", "JWK does not have a supported curve")
+        case _            => JsError(path \ "crv", "JWK does not have a defined curve")
       }
   })
 
@@ -71,7 +71,7 @@ trait JwkJsonSupport {
         case JsDefined(JsString("RSA")) => rsaJwkReads.reads(obj)
         case JsDefined(JsString("oct")) => octJwkFormat.reads(obj)
         case JsDefined(_)               => JsError(path \ "kty", "JWK does not have a supported key type")
-        case JsUndefined()              => JsError(path \ "kty", "JWK does not have a defined key type")
+        case _                          => JsError(path \ "kty", "JWK does not have a defined key type")
       }
   })
 

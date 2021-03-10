@@ -5,8 +5,8 @@ import scalalib._
 
 val devInfo = Developer("kag0", "Nathan Fischer", "https://github.com/kag0", Some("blackdoor"), Some("https://github.com/blackdoor"))
 
-val `2.12` = "2.12.12"
-val `2.13` = "2.13.3"
+val `2.12` = "2.12.13"
+val `2.13` = "2.13.5"
 
 trait BaseModule extends CrossScalaModule {
   def scalacOptions = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
@@ -71,13 +71,13 @@ object json extends Module {
 
   object play extends Cross[PlayModule](`2.12`, `2.13`)
   class PlayModule(val crossScalaVersion: String) extends JsonModule("Play") with PublishModule {
-    def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.7.4")
+    def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.9.2")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 
   object ninny extends Cross[NinnyModule](`2.12`, `2.13`)
   class NinnyModule(val crossScalaVersion: String) extends JsonModule("ninny") with PublishModule {
-    def ivyDeps = Agg(ivy"io.github.kag0::ninny:0.2.1", ivy"org.scala-lang.modules::scala-collection-compat:2.2.0")
+    def ivyDeps = Agg(ivy"io.github.kag0::ninny:0.2.10", ivy"org.scala-lang.modules::scala-collection-compat:2.2.0")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 }

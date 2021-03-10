@@ -1,8 +1,9 @@
 package black.door.jose.json
 
-import java.nio.charset.StandardCharsets
 import black.door.jose.{ByteDeserializer, ByteSerializer}
 import play.api.libs.json.{Json, Reads, Writes}
+
+import java.nio.charset.StandardCharsets
 
 package object playjson {
 

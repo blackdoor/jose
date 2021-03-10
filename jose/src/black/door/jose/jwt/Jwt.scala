@@ -1,15 +1,14 @@
 package black.door.jose.jwt
 
-import black.door.jose.{ByteDeserializer, ByteSerializer}
-
-import java.security.KeyException
-import java.util.concurrent.{Executors, TimeUnit}
-import cats.data.{EitherT, OptionT}
-import cats.implicits._
 import black.door.jose.jwa.{SignatureAlgorithm, SignatureAlgorithms}
 import black.door.jose.jwk.Jwk
 import black.door.jose.jws._
+import black.door.jose.{ByteDeserializer, ByteSerializer}
+import cats.data.{EitherT, OptionT}
+import cats.implicits._
 
+import java.security.KeyException
+import java.util.concurrent.{Executors, TimeUnit}
 import scala.collection.immutable.Seq
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -68,8 +67,14 @@ object Jwt {
       OptionT(jwtValidator.orElse(fallbackJwtValidator).apply(jwt)).toLeft(jwt)
     }.value
 
+  private val threadFactory = Executors.defaultThreadFactory()
+
   private val sadSpasticLittleEc =
-    ExecutionContext.fromExecutorService(Executors.newCachedThreadPool)
+    ExecutionContext.fromExecutor(Executors.newCachedThreadPool { r =>
+      val t = threadFactory.newThread(r)
+      t.setDaemon(true)
+      t
+    })
 
   def validate(compact: String) = new UnitValidation(compact)
 
@@ -110,7 +115,7 @@ object Jwt {
           headerDeserializer,
           sadSpasticLittleEc
         ),
-        Duration(1, TimeUnit.SECONDS)
+        Duration(5, TimeUnit.SECONDS)
       )
 
       def async(implicit ec: ExecutionContext) =

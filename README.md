@@ -70,8 +70,10 @@ So for example you could synchronously validate a JWT with some custom claims wi
 <sauce-code
 repo='blackdoor/jose'
 file='docs/src/black/door/jose/docs/SampleCode.scala'
-lines='64:76'
+lines='64:77'
 ></sauce-code>
+
+---
 
 > Not yet implemented:  
 > * JWK serialization partly implemented

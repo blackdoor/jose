@@ -8,7 +8,7 @@ import cats.data.{EitherT, OptionT}
 import cats.implicits._
 
 import java.security.KeyException
-import java.util.concurrent.{Executors, TimeUnit}
+import java.util.concurrent.TimeUnit
 import scala.collection.immutable.Seq
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -67,15 +67,6 @@ object Jwt {
       OptionT(jwtValidator.orElse(fallbackJwtValidator).apply(jwt)).toLeft(jwt)
     }.value
 
-  private val threadFactory = Executors.defaultThreadFactory()
-
-  private val sadSpasticLittleEc =
-    ExecutionContext.fromExecutor(Executors.newCachedThreadPool { r =>
-      val t = threadFactory.newThread(r)
-      t.setDaemon(true)
-      t
-    })
-
   def validate(compact: String) = new UnitValidation(compact)
 
   protected class UnitValidation(protected val compact: String) extends TypedValidation[Unit] {
@@ -84,6 +75,11 @@ object Jwt {
     def apply[A] = new TypedValidation[A] {
       protected def compact = self.compact
     }
+  }
+
+  private val sameThreadExecutionContext = new ExecutionContext {
+    def execute(runnable: Runnable)     = runnable.run()
+    def reportFailure(cause: Throwable) = cause.printStackTrace()
   }
 
   sealed trait TypedValidation[C] {
@@ -113,9 +109,9 @@ object Jwt {
         validate(compact, keyResolver, jwtValidator, fallbackJwtValidator, algorithms)(
           payloadDeserializer,
           headerDeserializer,
-          sadSpasticLittleEc
+          sameThreadExecutionContext
         ),
-        Duration(5, TimeUnit.SECONDS)
+        Duration(30, TimeUnit.SECONDS)
       )
 
       def async(implicit ec: ExecutionContext) =

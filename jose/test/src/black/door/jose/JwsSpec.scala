@@ -7,13 +7,15 @@ import black.door.jose.test._
 import com.nimbusds.jose.crypto.{MACSigner, MACVerifier, RSASSASigner}
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader, JWSObject, Payload}
-import org.scalatest.{EitherValues, Matchers, WordSpec}
+import org.scalatest._
+import wordspec._
+import matchers._
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-trait JwsSpec extends WordSpec with Matchers with EitherValues {
+trait JwsSpec extends AnyWordSpec with should.Matchers with EitherValues {
   implicit def headerSerializer: ByteSerializer[JwsHeader]
   implicit def headerDeserializer: ByteDeserializer[JwsHeader]
 

@@ -1,7 +1,8 @@
 package black.door.jose.json.circe.jwt
 
-import java.time.Instant
+import black.door.jose.{ByteDeserializer, ByteSerializer}
 
+import java.time.Instant
 import black.door.jose.jwt.Claims
 import io.circe.{Decoder, Encoder, HCursor, Json}
 import io.circe.syntax._
@@ -13,6 +14,7 @@ trait JwtJsonSupport {
 
   implicit private[this] val instantEncoder: Encoder[Instant] =
     Encoder.encodeLong.contramap[Instant](_.getEpochSecond)
+
   implicit private[this] val instantDecoder: Decoder[Instant] =
     Decoder.decodeLong.map(Instant.ofEpochSecond)
 
@@ -23,11 +25,12 @@ trait JwtJsonSupport {
 
   implicit def claimsEncoder[A: Encoder]: Encoder[Claims[A]] =
     deriveEncoder[Claims[A]].mapJson { j =>
-      val unregisteredObjectKeyJson = j.withObject(_.key(unregisteredObjectKey).asJson)
+      val unregisteredObjectKeyJson = j.withObject(_(unregisteredObjectKey).asJson)
       j.withObject(_.remove(unregisteredObjectKey).asJson).deepMerge(unregisteredObjectKeyJson)
     }
 
   implicit def claimsDecoder[A: Decoder]: Decoder[Claims[A]] = new Decoder[Claims[A]] {
+
     final def apply(c: HCursor): Decoder.Result[Claims[A]] = {
       val unregisteredObjectKeyExist =
         c.keys.exists(keys => keys.toList.contains(unregisteredObjectKey))
@@ -42,7 +45,11 @@ trait JwtJsonSupport {
     }
   }
 
-  implicit def claimsSerializer[C](implicit w: Encoder[Claims[C]]) = jsonSerializer[Claims[C]]
-  implicit def claimsDeserializer[C](implicit r: Decoder[Claims[C]]) =
+  implicit def claimsSerializer[C](implicit w: Encoder[Claims[C]]): ByteSerializer[Claims[C]] =
+    jsonSerializer[Claims[C]]
+
+  implicit def claimsDeserializer[C](
+      implicit r: Decoder[Claims[C]]
+    ): ByteDeserializer[Claims[C]] =
     jsonDeserializer[Claims[C]]
 }

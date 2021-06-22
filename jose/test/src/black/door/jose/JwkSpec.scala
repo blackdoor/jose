@@ -3,9 +3,11 @@ package black.door.jose
 import black.door.jose.jwk.{Jwk, OctJwk, P256KeyPair, RsaPublicKey}
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
 import com.nimbusds.jose.jwk.{ECKey, OctetSequenceKey, RSAKey}
-import org.scalatest.{EitherValues, FlatSpec, Matchers}
+import org.scalatest._
+import flatspec._
+import matchers._
 
-trait JwkSpec extends FlatSpec with Matchers with EitherValues {
+trait JwkSpec extends AnyFlatSpec with should.Matchers with EitherValues {
   def jwkSerializer: StringSerializer[Jwk]
   implicit def jwkDeserializer: StringDeserializer[Jwk]
 

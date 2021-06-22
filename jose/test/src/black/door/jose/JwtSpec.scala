@@ -11,11 +11,13 @@ import com.nimbusds.jose.crypto.{ECDSASigner, ECDSAVerifier}
 import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
 import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest._
+import flatspec._
+import matchers._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait JwtSpec extends FlatSpec with Matchers {
+trait JwtSpec extends AnyFlatSpec with should.Matchers {
 
   implicit def headerSerializer: ByteSerializer[JwsHeader]
   implicit def headerDeserializer: ByteDeserializer[JwsHeader]
@@ -24,7 +26,7 @@ trait JwtSpec extends FlatSpec with Matchers {
   implicit def payloadUnitDeserializer: ByteDeserializer[Claims[Unit]]
   implicit def payloadCustomDeserializer: ByteDeserializer[Claims[MyCustomClaimsClass]]
 
-  val es256Key = P256KeyPair.generate.withAlg(Some("ES256"))
+  val es256Key: P256KeyPair = P256KeyPair.generate.withAlg(Some("ES256"))
 
   def generateToken = {
     val claims = Claims(jti = Some("test token id"))

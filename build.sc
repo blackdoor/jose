@@ -7,6 +7,7 @@ val devInfo = Developer("kag0", "Nathan Fischer", "https://github.com/kag0", Som
 
 val `2.12` = "2.12.13"
 val `2.13` = "2.13.5"
+val `3`  = "3.0.0"
 
 trait BaseModule extends CrossScalaModule {
   def scalacOptions = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
@@ -27,20 +28,20 @@ trait BaseModule extends CrossScalaModule {
     def scalacOptions = T(super.scalacOptions().filterNot(_ == "-Xfatal-warnings"))
 
     def ivyDeps = Agg(
-      ivy"org.scalatest::scalatest:3.0.8",
+      ivy"org.scalatest::scalatest:3.2.9",
       ivy"com.nimbusds:nimbus-jose-jwt:7.8"
     )
 
-    def testFrameworks = List("org.scalatest.tools.Framework")
+    def testFramework = "org.scalatest.tools.Framework"
   }
 }
 
-object jose extends Cross[JoseModule](`2.12`, `2.13`)
+object jose extends Cross[JoseModule](`2.12`, `2.13`, `3`)
 class  JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:2.2.0",
-    ivy"com.typesafe.scala-logging::scala-logging:3.9.2"
+    ivy"org.typelevel::cats-core:2.6.1",
+    ivy"com.typesafe.scala-logging::scala-logging:3.9.4"
   )
 
   object test extends Test
@@ -57,10 +58,10 @@ object json extends Module {
     }
   }
 
-  object circe extends Cross[CirceModule](`2.12`, `2.13`)
+  object circe extends Cross[CirceModule](`2.12`, `2.13`, `3`)
   class CirceModule(val crossScalaVersion: String) extends JsonModule("Circe") with PublishModule {
     def moduleDeps = List(jose(crossScalaVersion))
-    lazy val circeVersion = "0.12.1"
+    lazy val circeVersion = "0.14.1"
 
     def ivyDeps = Agg(
       ivy"io.circe::circe-core:$circeVersion",

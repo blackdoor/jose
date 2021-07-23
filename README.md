@@ -21,7 +21,8 @@ The dependency is available on [Maven Central](https://mvnrepository.com/artifac
 Pretty simple: make a key, make something to sign, sign it.
 
 <sauce-code 
-    repo='blackdoor/jose' 
+    repo='blackdoor/jose'
+    lang='scala'
     file='docs/src/black/door/jose/docs/SampleCode.scala'
     lines='15:36'
 ></sauce-code>
@@ -69,6 +70,7 @@ So for example you could synchronously validate a JWT with some custom claims wi
 
 <sauce-code
 repo='blackdoor/jose'
+lang='scala'
 file='docs/src/black/door/jose/docs/SampleCode.scala'
 lines='64:77'
 ></sauce-code>

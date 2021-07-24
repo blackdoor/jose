@@ -1,4 +1,4 @@
-<script type='module' src="https://cdn.jsdelivr.net/gh/kag0/sauce@10.6.0/sauce.js">
+<script type='module' src="https://cdn.jsdelivr.net/gh/kag0/sauce@11.1.0/sauce.js">
 <h1>If you're reading this, click <a href="https://blackdoor.github.io/jose">HERE</a></h1>
 </script>
 

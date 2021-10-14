@@ -40,7 +40,7 @@ errorOrJwt.right.get.claims.sub // Some(my user)
   {
     import black.door.jose.jwk._
     import io.github.kag0.ninny.Auto._
-    case class MyCustomClaimsClass(thisTokenIsForAnAdmin: Boolean)
+    case class MyCustomClaimsClass(isAdmin: Boolean)
     val es256Key = Json
       .parse(
         """
@@ -66,7 +66,7 @@ import black.door.jose.jwt._
 
 val customValidator =
   JwtValidator.fromSync[MyCustomClaimsClass] {
-    case jwt if !jwt.claims.unregistered.thisTokenIsForAnAdmin =>
+    case jwt if !jwt.claims.unregistered.isAdmin =>
       "Token needs to be for an admin"
   }
 

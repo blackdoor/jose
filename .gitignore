@@ -101,3 +101,4 @@ fabric.properties
 .bloop
 .metals
 .vscode
+.coursier

@@ -18,7 +18,7 @@ trait JwkSpec extends AnyFlatSpec with should.Matchers with EitherValues {
     val initialJson = jwkSerializer(initialKey)
 
     val intermediateKey  = OctetSequenceKey.parse(initialJson)
-    val intermediateJson = intermediateKey.toJSONObject.toJSONString
+    val intermediateJson = intermediateKey.toJSONString
 
     val finalKey = Jwk.parse(intermediateJson).right.value
 
@@ -31,7 +31,7 @@ trait JwkSpec extends AnyFlatSpec with should.Matchers with EitherValues {
     val initialJson = jwkSerializer(initialKey)
 
     val intermediateKey  = ECKey.parse(initialJson)
-    val intermediateJson = intermediateKey.toJSONObject.toJSONString
+    val intermediateJson = intermediateKey.toJSONString
 
     val finalKey = Jwk.parse(intermediateJson).right.value
 
@@ -51,7 +51,7 @@ trait JwkSpec extends AnyFlatSpec with should.Matchers with EitherValues {
     val initialJson = jwkSerializer(initialKey)
 
     val intermediateKey  = RSAKey.parse(initialJson)
-    val intermediateJson = intermediateKey.toJSONObject.toJSONString
+    val intermediateJson = intermediateKey.toJSONString
 
     val finalKey = Jwk.parse(intermediateJson).right.value
 

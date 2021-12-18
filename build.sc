@@ -3,14 +3,20 @@ import mill.define.{Segment, Segments}
 import mill.scalalib.publish.{Developer, License, PomSettings, VersionControl}
 import scalalib._
 
-val devInfo = Developer("kag0", "Nathan Fischer", "https://github.com/kag0", Some("blackdoor"), Some("https://github.com/blackdoor"))
+val devInfo = Developer(
+  "kag0",
+  "Nathan Fischer",
+  "https://github.com/kag0",
+  Some("blackdoor"),
+  Some("https://github.com/blackdoor")
+)
 
 val `2.12` = "2.12.13"
 val `2.13` = "2.13.5"
-val `3`  = "3.0.0"
+val `3`    = "3.0.0"
 
 trait BaseModule extends CrossScalaModule {
-  def scalacOptions = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
+  def scalacOptions  = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
   def publishVersion = T.input(T.ctx().env("PUBLISH_VERSION"))
 
   def pomSettings: T[PomSettings] = PomSettings(
@@ -22,7 +28,9 @@ trait BaseModule extends CrossScalaModule {
     developers = List(devInfo)
   )
 
-  def artifactName = Segments(millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross]):_*).parts.mkString("-")
+  def artifactName =
+    Segments(millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross]): _*).parts
+      .mkString("-")
 
   trait Test extends Tests {
     def scalacOptions = T(super.scalacOptions().filterNot(_ == "-Xfatal-warnings"))
@@ -37,7 +45,8 @@ trait BaseModule extends CrossScalaModule {
 }
 
 object jose extends Cross[JoseModule](`2.12`, `2.13`, `3`)
-class  JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
+
+class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
   def ivyDeps = Agg(
     ivy"org.typelevel::cats-core:2.6.1",
@@ -51,7 +60,9 @@ object json extends Module {
 
   abstract class JsonModule(moduleName: String) extends BaseModule {
     def artifactName = "jose-" + super.artifactName()
-    def pomSettings = super.pomSettings().copy(description = s"$moduleName JSON support for blackdoor jose")
+
+    def pomSettings =
+      super.pomSettings().copy(description = s"$moduleName JSON support for blackdoor jose")
 
     object test extends Test {
       def moduleDeps = super.moduleDeps :+ jose(crossScalaVersion).test
@@ -59,8 +70,11 @@ object json extends Module {
   }
 
   object circe extends Cross[CirceModule](`2.12`, `2.13`, `3`)
-  class CirceModule(val crossScalaVersion: String) extends JsonModule("Circe") with PublishModule {
-    def moduleDeps = List(jose(crossScalaVersion))
+
+  class CirceModule(val crossScalaVersion: String)
+      extends JsonModule("Circe")
+      with PublishModule {
+    def moduleDeps        = List(jose(crossScalaVersion))
     lazy val circeVersion = "0.14.1"
 
     def ivyDeps = Agg(
@@ -71,19 +85,30 @@ object json extends Module {
   }
 
   object play extends Cross[PlayModule](`2.12`, `2.13`)
-  class PlayModule(val crossScalaVersion: String) extends JsonModule("Play") with PublishModule {
-    def ivyDeps = Agg(ivy"com.typesafe.play::play-json:2.9.2")
+
+  class PlayModule(val crossScalaVersion: String)
+      extends JsonModule("Play")
+      with PublishModule {
+    def ivyDeps    = Agg(ivy"com.typesafe.play::play-json:2.9.2")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 
   object ninny extends Cross[NinnyModule](`2.12`, `2.13`)
-  class NinnyModule(val crossScalaVersion: String) extends JsonModule("ninny") with PublishModule {
-    def ivyDeps = Agg(ivy"io.github.kag0::ninny:0.2.10", ivy"org.scala-lang.modules::scala-collection-compat:2.2.0")
+
+  class NinnyModule(val crossScalaVersion: String)
+      extends JsonModule("ninny")
+      with PublishModule {
+
+    def ivyDeps =
+      Agg(
+        ivy"io.github.kag0::ninny:0.2.10",
+        ivy"org.scala-lang.modules::scala-collection-compat:2.6.0"
+      )
     def moduleDeps = List(jose(crossScalaVersion))
   }
 }
 
 object docs extends ScalaModule {
   def scalaVersion = `2.13`
-  def moduleDeps = List(json.ninny(`2.13`))
+  def moduleDeps   = List(json.ninny(`2.13`))
 }

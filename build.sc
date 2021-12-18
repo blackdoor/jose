@@ -37,7 +37,7 @@ trait BaseModule extends CrossScalaModule {
 
     def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.2.9",
-      ivy"com.nimbusds:nimbus-jose-jwt:7.8"
+      ivy"com.nimbusds:nimbus-jose-jwt:7.9"
     )
 
     def testFramework = "org.scalatest.tools.Framework"
@@ -101,7 +101,7 @@ object json extends Module {
 
     def ivyDeps =
       Agg(
-        ivy"io.github.kag0::ninny:0.2.12",
+        ivy"io.github.kag0::ninny:0.2.10",
         ivy"org.scala-lang.modules::scala-collection-compat:2.2.0"
       )
     def moduleDeps = List(jose(crossScalaVersion))

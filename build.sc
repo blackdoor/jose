@@ -28,16 +28,16 @@ trait BaseModule extends CrossScalaModule {
     developers = List(devInfo)
   )
 
-  def artifactName = Segments(
-    millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross]): _*
-  ).parts.mkString("-")
+  def artifactName =
+    Segments(millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross]): _*).parts
+      .mkString("-")
 
   trait Test extends Tests {
     def scalacOptions = T(super.scalacOptions().filterNot(_ == "-Xfatal-warnings"))
 
     def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.2.9",
-      ivy"com.nimbusds:nimbus-jose-jwt:7.8"
+      ivy"com.nimbusds:nimbus-jose-jwt:7.9"
     )
 
     def testFramework = "org.scalatest.tools.Framework"
@@ -99,10 +99,11 @@ object json extends Module {
       extends JsonModule("ninny")
       with PublishModule {
 
-    def ivyDeps = Agg(
-      ivy"io.github.kag0::ninny:0.2.10",
-      ivy"org.scala-lang.modules::scala-collection-compat:2.2.0"
-    )
+    def ivyDeps =
+      Agg(
+        ivy"io.github.kag0::ninny:0.2.10",
+        ivy"org.scala-lang.modules::scala-collection-compat:2.2.0"
+      )
     def moduleDeps = List(jose(crossScalaVersion))
   }
 }

@@ -11,9 +11,9 @@ val devInfo = Developer(
   Some("https://github.com/blackdoor")
 )
 
-val `2.12` = "2.12.13"
-val `2.13` = "2.13.5"
-val `3`    = "3.0.0"
+val `2.12` = "2.12.15"
+val `2.13` = "2.13.7"
+val `3`    = "3.1.0"
 
 trait BaseModule extends CrossScalaModule {
   def scalacOptions  = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
@@ -36,8 +36,8 @@ trait BaseModule extends CrossScalaModule {
     def scalacOptions = T(super.scalacOptions().filterNot(_ == "-Xfatal-warnings"))
 
     def ivyDeps = Agg(
-      ivy"org.scalatest::scalatest:3.2.9",
-      ivy"com.nimbusds:nimbus-jose-jwt:7.9"
+      ivy"org.scalatest::scalatest:3.2.10",
+      ivy"com.nimbusds:nimbus-jose-jwt:9.15.2"
     )
 
     def testFramework = "org.scalatest.tools.Framework"
@@ -49,7 +49,7 @@ object jose extends Cross[JoseModule](`2.12`, `2.13`, `3`)
 class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:2.6.1",
+    ivy"org.typelevel::cats-core:2.7.0",
     ivy"com.typesafe.scala-logging::scala-logging:3.9.4"
   )
 
@@ -99,11 +99,7 @@ object json extends Module {
       extends JsonModule("ninny")
       with PublishModule {
 
-    def ivyDeps =
-      Agg(
-        ivy"io.github.kag0::ninny:0.2.10",
-        ivy"org.scala-lang.modules::scala-collection-compat:2.2.0"
-      )
+    def ivyDeps    = Agg(ivy"io.github.kag0::ninny:0.4.1")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 }

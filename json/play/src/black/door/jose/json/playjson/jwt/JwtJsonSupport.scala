@@ -19,12 +19,12 @@ trait JwtJsonSupport {
   )
 
   private val unitClaimsReads = Json.reads[Claims[Unit]]
+
   private val unregisteredInjector = Reads(
     _.validate[JsObject]
-      .map(
-        jsObj =>
-          if (jsObj.keys.contains(unregisteredObjectKey)) jsObj
-          else jsObj + (unregisteredObjectKey, JsNull)
+      .map(jsObj =>
+        if (jsObj.keys.contains(unregisteredObjectKey)) jsObj
+        else jsObj + (unregisteredObjectKey, JsNull)
       )
   )
 

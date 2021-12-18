@@ -10,5 +10,6 @@ case class Claims[+UnregisteredClaims](
     nbf: Option[Instant] = None,
     iat: Option[Instant] = None,
     jti: Option[String] = None,
-    unregistered: UnregisteredClaims = () // note: UnregisteredClaims cannot be an option type with some json marshallers
+    unregistered: UnregisteredClaims =
+      () // note: UnregisteredClaims cannot be an option type with some json marshallers
   )

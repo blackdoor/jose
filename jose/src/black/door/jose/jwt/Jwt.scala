@@ -37,9 +37,7 @@ object Jwt {
     Jwt(JwsHeader(alg, typ = Some("JWT"), kid = key.kid), claims).sign(key, algorithms)
   }
 
-  /**
-    *
-    * @param compact
+  /** @param compact
     * @param keyResolver
     * @param jwtValidator
     * @param fallbackJwtValidator A validator that runs if all the validations from jwtValidator pass.

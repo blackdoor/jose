@@ -37,7 +37,7 @@ trait BaseModule extends CrossScalaModule {
 
     def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.2.9",
-      ivy"com.nimbusds:nimbus-jose-jwt:7.9"
+      ivy"com.nimbusds:nimbus-jose-jwt:9.15.2"
     )
 
     def testFramework = "org.scalatest.tools.Framework"

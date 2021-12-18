@@ -23,7 +23,8 @@ trait JwtValidator[-UnregisteredClaims]
 
 object JwtValidator {
 
-  implicit def fromSyncLifted[U](fn: Jwt[U] => Option[String]): JwtValidator[U] = fn.andThen(Future.successful)(_)
+  implicit def fromSyncLifted[U](fn: Jwt[U] => Option[String]): JwtValidator[U] =
+    fn.andThen(Future.successful)(_)
 
   implicit def fromSync[C](validator: PartialFunction[Jwt[C], String]): JwtValidator[C] =
     validator.lift.andThen(Future.successful)(_)

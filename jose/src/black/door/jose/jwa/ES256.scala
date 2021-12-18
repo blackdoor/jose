@@ -1,4 +1,5 @@
 package black.door.jose.jwa
+
 import java.nio.charset.StandardCharsets
 import java.security.Signature
 
@@ -20,10 +21,13 @@ object ES256 extends SignatureAlgorithm {
 
   val sign = {
     case (key: EcPrivateKey, header, signingInput) if header.alg == alg =>
-      val sig = jcaSignature
+      val sig     = jcaSignature
       val javaKey = key.toJcaPrivateKey
       sig.initSign(javaKey)
       sig.update(signingInput.getBytes(StandardCharsets.US_ASCII))
-      DerTools.transcodeSignatureToConcat(sig.sign(), javaKey.getParams.getCurve.getField.getFieldSize / 4)
+      DerTools.transcodeSignatureToConcat(
+        sig.sign(),
+        javaKey.getParams.getCurve.getField.getFieldSize / 4
+      )
   }
 }

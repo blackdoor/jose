@@ -101,7 +101,7 @@ object json extends Module {
 
     def ivyDeps =
       Agg(
-        ivy"io.github.kag0::ninny:0.2.10",
+        ivy"io.github.kag0::ninny:0.2.12",
         ivy"org.scala-lang.modules::scala-collection-compat:2.2.0"
       )
     def moduleDeps = List(jose(crossScalaVersion))

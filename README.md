@@ -8,7 +8,7 @@
 [![Scaladoc](https://img.shields.io/badge/scaladoc-latest-blue.svg?style=flat-square)](https://blackdoor.github.io/jose/api/latest/black/door/jose/index.html)
 [![Maven Central](https://img.shields.io/maven-central/v/black.door/jose_2.12.svg?style=flat-square)](https://mvnrepository.com/artifact/black.door/jose)
 [![Gitter](https://img.shields.io/gitter/room/blackdoor/jose?style=flat-square)](https://gitter.im/blackdoor/jose?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
-[![Matrix](https://img.shields.io/matrix/blackdoor_jose:gitter.im?label=chat%20on%20matrix&logoColor=0dbd8b&style=flat-square)](https://matrix.to/#/#blackdoor_jose:gitter.im?via=gitter.im&via=matrix.org)
+[![Matrix](https://img.shields.io/badge/chat%20on%20matrix-blackdoor__jose%3Agitter.im-green?style=flat-square)](https://matrix.to/#/#blackdoor_jose:gitter.im?via=gitter.im&via=matrix.org)
 
 Extensible JOSE library for Scala.
 

@@ -3,8 +3,8 @@
 </script>
 
 # jose
-[![](https://img.shields.io/codacy/grade/177db012dc7548be9143a7562cd1d4bd.svg?style=flat-square)](https://app.codacy.com/project/blackdoor/jose/dashboard)
-[![Travis (.com)](https://img.shields.io/travis/com/blackdoor/jose.svg?style=flat-square)](https://travis-ci.com/blackdoor/jose)
+![Codacy grade](https://img.shields.io/codacy/grade/07cd7f556dca4d64b713c176338784e5?style=flat-square)
+[![Travis (.com)](https://img.shields.io/travis/com/blackdoor/jose.svg?style=flat-square)](https://travis-ci.com/blackdoor/jose) 
 [![Scaladoc](https://img.shields.io/badge/scaladoc-latest-blue.svg?style=flat-square)](https://blackdoor.github.io/jose/api/latest/black/door/jose/index.html)
 [![Maven Central](https://img.shields.io/maven-central/v/black.door/jose_2.12.svg?style=flat-square)](https://mvnrepository.com/artifact/black.door/jose)
 [![Gitter](https://img.shields.io/gitter/room/blackdoor/jose?style=flat-square)](https://gitter.im/blackdoor/jose?utm_source=share-link&utm_medium=link&utm_campaign=share-link)

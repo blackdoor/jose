@@ -16,8 +16,8 @@ val `2.13` = "2.13.7"
 val `3`    = "3.1.0"
 
 trait BaseModule extends CrossScalaModule {
-  def scalacOptions  = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
-  def publishVersion = T.input(T.ctx().env("PUBLISH_VERSION"))
+  def scalacOptions = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
+  def publishVersion: T[String] = T.input(T.ctx().env("PUBLISH_VERSION"))
 
   def pomSettings: T[PomSettings] = PomSettings(
     description = "Extensible JOSE library for Scala.",
@@ -32,16 +32,15 @@ trait BaseModule extends CrossScalaModule {
     Segments(millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross]): _*).parts
       .mkString("-")
 
-  trait Test extends Tests {
+  trait Test extends Tests with TestModule.ScalaTest {
     def scalacOptions = T(super.scalacOptions().filterNot(_ == "-Xfatal-warnings"))
 
     def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.2.10",
       ivy"com.nimbusds:nimbus-jose-jwt:9.15.2"
     )
-
-    def testFramework = "org.scalatest.tools.Framework"
   }
+
 }
 
 object jose extends Cross[JoseModule](`2.12`, `2.13`, `3`)
@@ -67,6 +66,7 @@ object json extends Module {
     object test extends Test {
       def moduleDeps = super.moduleDeps :+ jose(crossScalaVersion).test
     }
+
   }
 
   object circe extends Cross[CirceModule](`2.12`, `2.13`, `3`)
@@ -82,6 +82,7 @@ object json extends Module {
       ivy"io.circe::circe-generic:$circeVersion",
       ivy"io.circe::circe-parser:$circeVersion"
     )
+
   }
 
   object play extends Cross[PlayModule](`2.12`, `2.13`)
@@ -102,6 +103,7 @@ object json extends Module {
     def ivyDeps    = Agg(ivy"io.github.kag0::ninny:0.4.3")
     def moduleDeps = List(jose(crossScalaVersion))
   }
+
 }
 
 object docs extends ScalaModule {

@@ -17,7 +17,8 @@ case class OctJwk(
 
 object OctJwk {
 
-  /** @param len key length in bits
+  /** @param len
+    *   key length in bits
     */
   def generate(len: Int) = {
     val random = new SecureRandom

@@ -40,13 +40,15 @@ object Jwt {
   /** @param compact
     * @param keyResolver
     * @param jwtValidator
-    * @param fallbackJwtValidator A validator that runs if all the validations from jwtValidator pass.
-    *                             By default this checks temporal claims.
+    * @param fallbackJwtValidator
+    *   A validator that runs if all the validations from jwtValidator pass. By default this
+    *   checks temporal claims.
     * @param algorithms
     * @param payloadDeserializer
     * @param headerDeserializer
     * @param ec
-    * @tparam C unregistered claims type
+    * @tparam C
+    *   unregistered claims type
     * @return
     */
   def validate[C](

@@ -75,7 +75,7 @@ object json extends Module {
       extends JsonModule("Circe")
       with PublishModule {
     def moduleDeps        = List(jose(crossScalaVersion))
-    lazy val circeVersion = "0.14.1"
+    lazy val circeVersion = "0.14.3"
 
     def ivyDeps = Agg(
       ivy"io.circe::circe-core:$circeVersion",

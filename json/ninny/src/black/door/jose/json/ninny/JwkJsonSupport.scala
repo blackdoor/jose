@@ -52,8 +52,8 @@ trait JwkJsonSupport {
         case Some(JsonString("EC"))  => obj.to[EcJwk]
         case Some(JsonString("RSA")) => obj.to[RsaPublicKey]
         case Some(JsonString("oct")) => obj.to[OctJwk]
-        case Some(_)                 => Failure(new KeyException("Expected JSON string for key type"))
-        case None                    => Failure(new KeyException("JWK missing key type"))
+        case Some(_) => Failure(new KeyException("Expected JSON string for key type"))
+        case None    => Failure(new KeyException("JWK missing key type"))
       }
     case other =>
       Failure(

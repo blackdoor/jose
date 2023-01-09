@@ -48,7 +48,7 @@ object jose extends Cross[JoseModule](`2.12`, `2.13`, `3`)
 class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:2.7.0",
+    ivy"org.typelevel::cats-core:2.9.0",
     ivy"com.typesafe.scala-logging::scala-logging:3.9.5"
   )
 

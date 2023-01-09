@@ -8,13 +8,17 @@ import java.security.SignatureException
   */
 object DerTools {
 
-  /** Transcodes the JCA ASN.1/DER-encoded signature into the concatenated
-    * R + S format expected by ECDSA JWS.
+  /** Transcodes the JCA ASN.1/DER-encoded signature into the concatenated R + S format
+    * expected by ECDSA JWS.
     *
-    * @param derSignature The ASN1./DER-encoded. Must not be { @code null}.
-    * @param outputLength The expected length of the ECDSA JWS signature.
-    * @return The ECDSA JWS encoded signature.
-    * @throws SignatureException If the ASN.1/DER signature format is invalid.
+    * @param derSignature
+    *   The ASN1./DER-encoded. Must not be { @code null}.
+    * @param outputLength
+    *   The expected length of the ECDSA JWS signature.
+    * @return
+    *   The ECDSA JWS encoded signature.
+    * @throws SignatureException
+    *   If the ASN.1/DER signature format is invalid.
     */
   @throws[SignatureException]
   def transcodeSignatureToConcat(derSignature: Array[Byte], outputLength: Int): Array[Byte] = {
@@ -61,14 +65,15 @@ object DerTools {
     concatSignature
   }
 
-  /** Transcodes the ECDSA JWS signature into ASN.1/DER format for use by
-    * the JCA verifier.
+  /** Transcodes the ECDSA JWS signature into ASN.1/DER format for use by the JCA verifier.
     *
-    * @param jwsSignature The JWS signature, consisting of the
-    *                     concatenated R and S values. Must not be
-    *                     { @code null}.
-    * @return The ASN.1/DER encoded signature.
-    * @throws SignatureException If the ECDSA JWS signature format is invalid.
+    * @param jwsSignature
+    *   The JWS signature, consisting of the concatenated R and S values. Must not be { @code
+    *   null}.
+    * @return
+    *   The ASN.1/DER encoded signature.
+    * @throws SignatureException
+    *   If the ECDSA JWS signature format is invalid.
     */
   @throws[SignatureException]
   def transcodeSignatureToDER(jwsSignature: Array[Byte]): Array[Byte] = {

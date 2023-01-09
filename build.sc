@@ -37,7 +37,7 @@ trait BaseModule extends CrossScalaModule {
 
     def ivyDeps = Agg(
       ivy"org.scalatest::scalatest:3.2.10",
-      ivy"com.nimbusds:nimbus-jose-jwt:9.15.2"
+      ivy"com.nimbusds:nimbus-jose-jwt:9.27"
     )
   }
 
@@ -49,7 +49,7 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
 
   def ivyDeps = Agg(
     ivy"org.typelevel::cats-core:2.7.0",
-    ivy"com.typesafe.scala-logging::scala-logging:3.9.4"
+    ivy"com.typesafe.scala-logging::scala-logging:3.9.5"
   )
 
   object test extends Test
@@ -75,7 +75,7 @@ object json extends Module {
       extends JsonModule("Circe")
       with PublishModule {
     def moduleDeps        = List(jose(crossScalaVersion))
-    lazy val circeVersion = "0.14.1"
+    lazy val circeVersion = "0.14.3"
 
     def ivyDeps = Agg(
       ivy"io.circe::circe-core:$circeVersion",
@@ -90,7 +90,7 @@ object json extends Module {
   class PlayModule(val crossScalaVersion: String)
       extends JsonModule("Play")
       with PublishModule {
-    def ivyDeps    = Agg(ivy"com.typesafe.play::play-json:2.9.2")
+    def ivyDeps    = Agg(ivy"com.typesafe.play::play-json:2.9.3")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 

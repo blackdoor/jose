@@ -70,8 +70,8 @@ trait JwkJsonSupport {
         case JsDefined(JsString("EC"))  => ecJwkReads.reads(obj)
         case JsDefined(JsString("RSA")) => rsaJwkReads.reads(obj)
         case JsDefined(JsString("oct")) => octJwkFormat.reads(obj)
-        case JsDefined(_)               => JsError(path \ "kty", "JWK does not have a supported key type")
-        case _                          => JsError(path \ "kty", "JWK does not have a defined key type")
+        case JsDefined(_) => JsError(path \ "kty", "JWK does not have a supported key type")
+        case _            => JsError(path \ "kty", "JWK does not have a defined key type")
       }
   })
 

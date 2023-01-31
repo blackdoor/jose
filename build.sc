@@ -100,7 +100,7 @@ object json extends Module {
       extends JsonModule("ninny")
       with PublishModule {
 
-    def ivyDeps    = Agg(ivy"io.github.kag0::ninny:0.4.3")
+    def ivyDeps    = Agg(ivy"tk.nrktkt::ninny:0.7.2")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 

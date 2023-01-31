@@ -90,7 +90,7 @@ object json extends Module {
   class PlayModule(val crossScalaVersion: String)
       extends JsonModule("Play")
       with PublishModule {
-    def ivyDeps    = Agg(ivy"com.typesafe.play::play-json:2.9.3")
+    def ivyDeps    = Agg(ivy"com.typesafe.play::play-json:2.9.4")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 

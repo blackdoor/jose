@@ -36,7 +36,7 @@ trait BaseModule extends CrossScalaModule {
     def scalacOptions = T(super.scalacOptions().filterNot(_ == "-Xfatal-warnings"))
 
     def ivyDeps = Agg(
-      ivy"org.scalatest::scalatest:3.2.15",
+      ivy"org.scalatest::scalatest:3.2.17",
       ivy"com.nimbusds:nimbus-jose-jwt:9.30"
     )
   }

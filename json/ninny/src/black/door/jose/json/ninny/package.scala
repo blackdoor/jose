@@ -2,7 +2,7 @@ package black.door.jose.json
 
 import java.nio.charset.StandardCharsets.UTF_8
 import black.door.jose.{ByteDeserializer, ByteSerializer}
-import io.github.kag0.ninny.{FromJson, Json, ToSomeJson}
+import nrktkt.ninny.{FromJson, Json, ToSomeJson}
 
 package object ninny {
 

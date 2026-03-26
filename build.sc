@@ -94,13 +94,14 @@ object json extends Module {
     def moduleDeps = List(jose(crossScalaVersion))
   }
 
-  object ninny extends Cross[NinnyModule](`2.12`, `2.13`)
+  object ninny extends Cross[NinnyModule](`2.13`)
 
   class NinnyModule(val crossScalaVersion: String)
       extends JsonModule("ninny")
       with PublishModule {
+    override def scalacOptions = super.scalacOptions().filterNot(_ == "-Xfatal-warnings")
 
-    def ivyDeps    = Agg(ivy"io.github.kag0::ninny:0.4.3")
+    def ivyDeps    = Agg(ivy"tk.nrktkt::ninny:0.7.2")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 

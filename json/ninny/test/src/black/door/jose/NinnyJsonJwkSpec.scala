@@ -2,7 +2,7 @@ package black.door.jose
 
 import black.door.jose.json.ninny.JsonSupport
 import black.door.jose.jwk.Jwk
-import io.github.kag0.ninny._
+import nrktkt.ninny._
 
 class NinnyJsonJwkSpec extends JwkSpec with JsonSupport {
   def jwkSerializer: StringSerializer[Jwk] = k => Json.render(k.toSomeJson)

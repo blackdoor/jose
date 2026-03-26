@@ -5,7 +5,7 @@ import JwkJsonSupport._
 
 trait JwsJsonSupport {
 
-  import io.github.kag0.ninny.Auto._
+  import nrktkt.ninny.Auto._
 
   implicit val headerSerializer   = jsonSerializer[JwsHeader]
   implicit val headerDeserializer = jsonDeserializer[JwsHeader]

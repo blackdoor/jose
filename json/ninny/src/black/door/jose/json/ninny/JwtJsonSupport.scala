@@ -4,6 +4,7 @@ import black.door.jose.{ByteDeserializer, ByteSerializer}
 import black.door.jose.jwt._
 import io.github.kag0.ninny.ast.JsonObject
 import io.github.kag0.ninny.{FromJson, ToJson, ToSomeJson, ToSomeJsonObject}
+import java.time.Instant
 
 trait JwtJsonSupport {
 
@@ -15,7 +16,10 @@ trait JwtJsonSupport {
         .getOrElse(JsonObject(Map.empty))
     }
 
-  private def _claimsFromJson[A: FromJson] = FromJson.auto[Claims[A]]
+  private def _claimsFromJson[A: FromJson]:FromJson[Claims[A]] = FromJson.forProduct8("iss", "sub", "aud", "exp", "nbf", "iat", "jti", "unregistered") (
+    (iss: Option[String], sub: Option[String], aud: Option[String], exp: Option[Instant], nbf: Option[Instant], iat: Option[Instant], jti: Option[String], unregistered: A) =>
+      Claims(iss, sub, aud, exp, nbf, iat, jti, unregistered)
+  )
 
   implicit def claimsFromJson[C: FromJson] =
     FromJson.fromSome[Claims[C]] { js =>

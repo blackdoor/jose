@@ -22,17 +22,6 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - name: Cache Mill dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/mill
-            ~/.ivy2/cache
-            ~/.cache/coursier
-          key: ${{ runner.os }}-mill-${{ hashFiles('build.sc') }}
-          restore-keys: |
-            ${{ runner.os }}-mill-
-
       - name: Compile
         run: ./mill --disable-ticker __.compile
 

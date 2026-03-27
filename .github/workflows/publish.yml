@@ -1,8 +1,9 @@
 name: Publish
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - '*'
 
 jobs:
   publish:
@@ -21,16 +22,16 @@ jobs:
 
       - name: Import GPG key
         run: |
-          echo "$SIGNING_KEY" | gpg --import
+          echo "$SIGNING_KEY" | gpg --batch --import
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
 
       - name: Publish to Maven Central
         run: |
-          PUBLISH_VERSION=${{ github.event.release.tag_name }} ./mill -i --disable-ticker \
+          PUBLISH_VERSION=${{ github.ref_name }} ./mill -i --disable-ticker \
             mill.scalalib.PublishModule/publishAll \
-            --gpgArgs --passphrase=$GPG_PW,--batch,--yes,-a,-b \
-            --sonatypeCreds $SONATYPE_NAME:$SONATYPE_PW \
+            --gpgArgs --passphrase="$GPG_PW",--batch,--yes,-a,-b \
+            --sonatypeCreds "$SONATYPE_NAME":"$SONATYPE_PW" \
             --publishArtifacts __.publishArtifacts \
             --release true
         env:

@@ -29,7 +29,7 @@ jobs:
         run: |
           PUBLISH_VERSION=${{ github.event.release.tag_name }} ./mill -i --disable-ticker \
             mill.scalalib.PublishModule/publishAll \
-            --gpgArgs --passphrase="$GPG_PW",--batch,--yes,-a,-b \
+            --gpgArgs --passphrase="$GPG_PW",--batch,--yes,-a,-b,--pinentry-mode,loopback \
             --sonatypeCreds "$SONATYPE_NAME":"$SONATYPE_PW" \
             --publishArtifacts __.publishArtifacts \
             --release true

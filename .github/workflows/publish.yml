@@ -1,9 +1,8 @@
 name: Publish
 
 on:
-  push:
-    tags:
-      - '*'
+  release:
+    types: [published]
 
 jobs:
   publish:
@@ -28,7 +27,7 @@ jobs:
 
       - name: Publish to Maven Central
         run: |
-          PUBLISH_VERSION=${{ github.ref_name }} ./mill -i --disable-ticker \
+          PUBLISH_VERSION=${{ github.event.release.tag_name }} ./mill -i --disable-ticker \
             mill.scalalib.PublishModule/publishAll \
             --gpgArgs --passphrase=$GPG_PW,--batch,--yes,-a,-b \
             --sonatypeCreds $SONATYPE_NAME:$SONATYPE_PW \

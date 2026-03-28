@@ -109,7 +109,7 @@ object json extends Module {
     def jsonModuleName = "ninny"
     override def scalacOptions = super.scalacOptions().filterNot(_ == "-Xfatal-warnings")
 
-    def ivyDeps    = Agg(mvn"tk.nrktkt::ninny:0.7.2")
+    def ivyDeps    = Agg(mvn"tk.nrktkt::ninny:0.7.3")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 

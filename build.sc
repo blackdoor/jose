@@ -81,7 +81,7 @@ object json extends Module {
     def crossScalaVersion = crossValue
     def jsonModuleName = "Circe"
     def moduleDeps        = List(jose(crossScalaVersion))
-    lazy val circeVersion = "0.14.3"
+    lazy val circeVersion = "0.14.15"
 
     def ivyDeps = Agg(
       mvn"io.circe::circe-core:$circeVersion",

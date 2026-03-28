@@ -51,7 +51,7 @@ trait JoseModule extends BaseModule with PublishModule with Cross.Module[String]
   def crossScalaVersion = crossValue
 
   def ivyDeps = Agg(
-    mvn"org.typelevel::cats-core:2.7.0",
+    mvn"org.typelevel::cats-core:2.13.0",
     mvn"com.typesafe.scala-logging::scala-logging:3.9.5"
   )
 

@@ -34,5 +34,5 @@ jobs:
             --shouldRelease true
         env:
           GPG_PW: ${{ secrets.GPG_PW }}
-          SONATYPE_NAME: ${{ secrets.SONATYPE_NAME }}
+          SONATYPE_NAME: ${{ vars.SONATYPE_NAME }}
           SONATYPE_PW: ${{ secrets.SONATYPE_PW }}

@@ -6,7 +6,7 @@ import scalalib._
 val devInfo = Developer(
   "kag0",
   "Nathan Fischer",
-  "https://github.com/kag0",
+  "https://github.com/nrktkt",
   Some("blackdoor"),
   Some("https://github.com/blackdoor")
 )
@@ -37,9 +37,9 @@ trait BaseModule extends CrossScalaModule {
     override def scalacOptions = super.scalacOptions().filterNot(_ == "-Xfatal-warnings")
 
     def ivyDeps = Agg(
-      ivy"org.scalatest::scalatest:3.2.15",
-      ivy"com.nimbusds:nimbus-jose-jwt:9.30",
-      ivy"org.slf4j:slf4j-simple:2.0.17"
+      mvn"org.scalatest::scalatest:3.2.15",
+      mvn"com.nimbusds:nimbus-jose-jwt:9.30",
+      mvn"org.slf4j:slf4j-simple:2.0.17"
     )
   }
 
@@ -51,8 +51,8 @@ trait JoseModule extends BaseModule with PublishModule with Cross.Module[String]
   def crossScalaVersion = crossValue
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:2.7.0",
-    ivy"com.typesafe.scala-logging::scala-logging:3.9.5"
+    mvn"org.typelevel::cats-core:2.7.0",
+    mvn"com.typesafe.scala-logging::scala-logging:3.9.5"
   )
 
   object test extends Test
@@ -84,9 +84,9 @@ object json extends Module {
     lazy val circeVersion = "0.14.3"
 
     def ivyDeps = Agg(
-      ivy"io.circe::circe-core:$circeVersion",
-      ivy"io.circe::circe-generic:$circeVersion",
-      ivy"io.circe::circe-parser:$circeVersion"
+      mvn"io.circe::circe-core:$circeVersion",
+      mvn"io.circe::circe-generic:$circeVersion",
+      mvn"io.circe::circe-parser:$circeVersion"
     )
 
   }
@@ -97,7 +97,7 @@ object json extends Module {
       with PublishModule with Cross.Module[String] {
     def crossScalaVersion = crossValue
     def jsonModuleName = "Play"
-    def ivyDeps    = Agg(ivy"com.typesafe.play::play-json:2.9.4")
+    def ivyDeps    = Agg(mvn"com.typesafe.play::play-json:2.9.4")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 
@@ -109,7 +109,7 @@ object json extends Module {
     def jsonModuleName = "ninny"
     override def scalacOptions = super.scalacOptions().filterNot(_ == "-Xfatal-warnings")
 
-    def ivyDeps    = Agg(ivy"tk.nrktkt::ninny:0.7.2")
+    def ivyDeps    = Agg(mvn"tk.nrktkt::ninny:0.7.2")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 

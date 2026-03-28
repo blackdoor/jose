@@ -52,7 +52,7 @@ trait JoseModule extends BaseModule with PublishModule with Cross.Module[String]
 
   def ivyDeps = Agg(
     mvn"org.typelevel::cats-core:2.7.0",
-    mvn"com.typesafe.scala-logging::scala-logging:3.9.5"
+    mvn"com.typesafe.scala-logging::scala-logging:3.9.6"
   )
 
   object test extends Test

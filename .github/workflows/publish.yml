@@ -27,12 +27,11 @@ jobs:
 
       - name: Publish to Maven Central
         run: |
-          PUBLISH_VERSION=${{ github.event.release.tag_name }} ./mill -i --disable-ticker \
-            mill.scalalib.PublishModule/publishAll \
+          PUBLISH_VERSION=${{ github.event.release.tag_name }} ./mill -i --ticker false \
+            mill.scalalib.SonatypeCentralPublishModule/publishAll \
             --gpgArgs --passphrase="$GPG_PW",--batch,--yes,-a,-b,--pinentry-mode,loopback \
-            --sonatypeCreds "$SONATYPE_NAME":"$SONATYPE_PW" \
-            --publishArtifacts __.publishArtifacts \
-            --release true
+            --username "$SONATYPE_NAME" --password "$SONATYPE_PW" \
+            --shouldRelease true
         env:
           GPG_PW: ${{ secrets.GPG_PW }}
           SONATYPE_NAME: ${{ secrets.SONATYPE_NAME }}

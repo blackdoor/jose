@@ -6,7 +6,7 @@ import scalalib._
 val devInfo = Developer(
   "kag0",
   "Nathan Fischer",
-  "https://github.com/kag0",
+  "https://github.com/nrktkt",
   Some("blackdoor"),
   Some("https://github.com/blackdoor")
 )
@@ -29,16 +29,17 @@ trait BaseModule extends CrossScalaModule {
   )
 
   def artifactName =
-    Segments(millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross]): _*).parts
+    millModuleSegments.value.filterNot(_.isInstanceOf[Segment.Cross])
+      .map(_.pathSegments.head)
       .mkString("-")
 
-  trait Test extends Tests with TestModule.ScalaTest {
-    def scalacOptions = T(super.scalacOptions().filterNot(_ == "-Xfatal-warnings"))
+  trait Test extends ScalaTests with TestModule.ScalaTest {
+    override def scalacOptions = super.scalacOptions().filterNot(_ == "-Xfatal-warnings")
 
     def ivyDeps = Agg(
-      ivy"org.scalatest::scalatest:3.2.15",
-      ivy"com.nimbusds:nimbus-jose-jwt:9.30",
-      ivy"org.slf4j:slf4j-simple:2.0.17"
+      mvn"org.scalatest::scalatest:3.2.15",
+      mvn"com.nimbusds:nimbus-jose-jwt:9.30",
+      mvn"org.slf4j:slf4j-simple:2.0.17"
     )
   }
 
@@ -46,11 +47,12 @@ trait BaseModule extends CrossScalaModule {
 
 object jose extends Cross[JoseModule](`2.12`, `2.13`, `3`)
 
-class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishModule {
+trait JoseModule extends BaseModule with PublishModule with Cross.Module[String] {
+  def crossScalaVersion = crossValue
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:2.7.0",
-    ivy"com.typesafe.scala-logging::scala-logging:3.9.5"
+    mvn"org.typelevel::cats-core:2.7.0",
+    mvn"com.typesafe.scala-logging::scala-logging:3.9.5"
   )
 
   object test extends Test
@@ -58,51 +60,56 @@ class JoseModule(val crossScalaVersion: String) extends BaseModule with PublishM
 
 object json extends Module {
 
-  abstract class JsonModule(moduleName: String) extends BaseModule {
+  trait JsonModule extends BaseModule {
+    def jsonModuleName: String
+
     def artifactName = "jose-" + super.artifactName()
 
     def pomSettings =
-      super.pomSettings().copy(description = s"$moduleName JSON support for blackdoor jose")
+      super.pomSettings().copy(description = s"$jsonModuleName JSON support for blackdoor jose")
 
     object test extends Test {
-      def moduleDeps = super.moduleDeps :+ jose(crossScalaVersion).test
+      override def moduleDeps = super.moduleDeps ++ Seq(jose(crossScalaVersion).test)
     }
 
   }
 
   object circe extends Cross[CirceModule](`2.12`, `2.13`, `3`)
 
-  class CirceModule(val crossScalaVersion: String)
-      extends JsonModule("Circe")
-      with PublishModule {
+  trait CirceModule extends JsonModule
+      with PublishModule with Cross.Module[String] {
+    def crossScalaVersion = crossValue
+    def jsonModuleName = "Circe"
     def moduleDeps        = List(jose(crossScalaVersion))
     lazy val circeVersion = "0.14.3"
 
     def ivyDeps = Agg(
-      ivy"io.circe::circe-core:$circeVersion",
-      ivy"io.circe::circe-generic:$circeVersion",
-      ivy"io.circe::circe-parser:$circeVersion"
+      mvn"io.circe::circe-core:$circeVersion",
+      mvn"io.circe::circe-generic:$circeVersion",
+      mvn"io.circe::circe-parser:$circeVersion"
     )
 
   }
 
   object play extends Cross[PlayModule](`2.12`, `2.13`)
 
-  class PlayModule(val crossScalaVersion: String)
-      extends JsonModule("Play")
-      with PublishModule {
-    def ivyDeps    = Agg(ivy"com.typesafe.play::play-json:2.9.4")
+  trait PlayModule extends JsonModule
+      with PublishModule with Cross.Module[String] {
+    def crossScalaVersion = crossValue
+    def jsonModuleName = "Play"
+    def ivyDeps    = Agg(mvn"com.typesafe.play::play-json:2.9.4")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 
   object ninny extends Cross[NinnyModule](`2.13`)
 
-  class NinnyModule(val crossScalaVersion: String)
-      extends JsonModule("ninny")
-      with PublishModule {
+  trait NinnyModule extends JsonModule
+      with PublishModule with Cross.Module[String] {
+    def crossScalaVersion = crossValue
+    def jsonModuleName = "ninny"
     override def scalacOptions = super.scalacOptions().filterNot(_ == "-Xfatal-warnings")
 
-    def ivyDeps    = Agg(ivy"tk.nrktkt::ninny:0.7.2")
+    def ivyDeps    = Agg(mvn"tk.nrktkt::ninny:0.7.2")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 

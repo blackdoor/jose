@@ -21,12 +21,11 @@ trait JwtJsonSupport {
       Claims(iss, sub, aud, exp, nbf, iat, jti, unregistered)
   )
 
-  implicit def claimsFromJson[C: FromJson] =
+  implicit def claimsFromJson[C: FromJson]: FromJson[Claims[C]] =
     FromJson.fromSome[Claims[C]] { js =>
-      implicit def from[A: FromJson] = _claimsFromJson[A]
 
       for {
-        registered   <- js.to[Claims[Option[Unit]]]
+        registered   <- _claimsFromJson[Option[Unit]].from(js)
         unregistered <- js.to[C]
       } yield registered.copy(unregistered = unregistered)
     }

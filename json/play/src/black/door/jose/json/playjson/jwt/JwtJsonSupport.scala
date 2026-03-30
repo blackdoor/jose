@@ -5,15 +5,17 @@ import java.time.Instant
 import black.door.jose.jwt.Claims
 import black.door.jose.json.playjson._
 import play.api.libs.json._
+import black.door.jose.ByteDeserializer
+import black.door.jose.ByteSerializer
 
 trait JwtJsonSupport {
 
   private val unregisteredObjectKey = "unregistered"
 
-  implicit val unitReads  = Reads[Unit](_ => JsSuccess(()))
-  implicit val unitWrites = OWrites[Unit](_ => JsObject.empty)
+  implicit val unitReads: Reads[Unit]    = Reads[Unit](_ => JsSuccess(()))
+  implicit val unitWrites: OWrites[Unit] = OWrites[Unit](_ => JsObject.empty)
 
-  implicit private[this] val instantFormat = Format[Instant](
+  implicit private[this] val instantFormat: Format[Instant] = Format[Instant](
     implicitly[Reads[Long]].map(Instant.ofEpochSecond),
     Writes[Instant](inst => JsNumber(inst.getEpochSecond))
   )
@@ -44,10 +46,10 @@ trait JwtJsonSupport {
         (jsObj - unregisteredObjectKey) ++ (jsObj \ unregisteredObjectKey).as[JsObject]
       }
 
-  implicit def claimsSerializer[C](implicit w: Writes[Claims[C]]) =
+  implicit def claimsSerializer[C](implicit w: Writes[Claims[C]]):ByteSerializer[Claims[C]] =
     jsonSerializer[Claims[C]]
 
-  implicit def claimsDeserializer[C](implicit r: Reads[Claims[C]]) =
+  implicit def claimsDeserializer[C](implicit r: Reads[Claims[C]]):ByteDeserializer[Claims[C]] =
     jsonDeserializer[Claims[C]]
 }
 

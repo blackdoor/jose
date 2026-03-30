@@ -97,7 +97,7 @@ object json extends Module {
       with PublishModule with Cross.Module[String] {
     def crossScalaVersion = crossValue
     def jsonModuleName = "Play"
-    def ivyDeps    = Agg(mvn"com.typesafe.play::play-json:2.9.4")
+    def ivyDeps    = Agg(mvn"com.typesafe.play::play-json:2.10.8")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 

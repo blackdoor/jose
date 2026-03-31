@@ -36,7 +36,7 @@ object JwtValidator {
     maybeIat.map(iat => s"It was issued at $iat.").getOrElse("")
 
   def defaultValidator(clock: Clock = Clock.systemDefaultZone) = {
-    val now = Instant.now(clock)
+    def now = Instant.now(clock)
     JwtValidator.fromSync[Any] {
       case Jwt(_, claims) if claims.exp.exists(_.isBefore(now)) =>
         s"Token expired at ${claims.exp.get}.${iatMessage(claims.iat)} It is now $now."

@@ -22,10 +22,10 @@ trait JwkJsonSupport {
   private val base64Decoder = Base64.getUrlDecoder
   private val base64Encoder = Base64.getUrlEncoder.withoutPadding
 
-  implicit private val bigIntFromJson =
+  implicit private val bigIntFromJson: FromJson[BigInt] =
     indexedBytesFromJson.map(bytes => BigInt(idxToArray(bytes)))
 
-  implicit private val bigIntToJson =
+  implicit private val bigIntToJson: ToJsonValue[BigInt,JsonString] =
     indexedBytesToJson.contramap[BigInt](i => ArraySeq.unsafeWrapArray(i.toByteArray))
 
   val p256KeyPairFromJson   = FromJson.auto[P256KeyPair]
@@ -38,13 +38,13 @@ trait JwkJsonSupport {
         Failure(new IllegalArgumentException("Binary value was not a base64url string"))
     }
 
-  implicit private lazy val indexedBytesToJson =
+  implicit private lazy val indexedBytesToJson: ToSomeJsonValue[IndexedSeq[Byte],JsonString] =
     ToJson((bytes: IndexedSeq[Byte]) =>
       JsonString(base64Encoder.encodeToString(idxToArray(bytes)))
     )
 
-  implicit val rsaJwkFromJson = FromJson.auto[RsaPublicKey]
-  implicit val octJwkFromJson = FromJson.auto[OctJwk]
+  implicit val rsaJwkFromJson: FromJson[RsaPublicKey] = FromJson.auto
+  implicit val octJwkFromJson: FromJson[OctJwk] = FromJson.auto
 
   implicit val jwkFromJson: FromJson[Jwk] = FromJson.fromSome {
     case obj: JsonObject =>
@@ -61,8 +61,8 @@ trait JwkJsonSupport {
       )
   }
 
-  implicit private val p256KeyPairToJson   = ToJson.auto[P256KeyPair]
-  implicit private val p256PublicKeyToJson = ToJson.auto[P256PublicKey]
+  implicit private val p256KeyPairToJson: ToSomeJsonObject[P256KeyPair]   = ToJson.auto
+  implicit private val p256PublicKeyToJson: ToSomeJsonObject[P256PublicKey] = ToJson.auto
 
   implicit val ecJwkToJson: ToSomeJsonObject[EcJwk] = k =>
     (k match {

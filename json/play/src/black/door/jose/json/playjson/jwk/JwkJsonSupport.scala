@@ -9,7 +9,7 @@ import scala.collection.immutable.IndexedSeq
 
 trait JwkJsonSupport {
 
-  implicit private val bigIntFormat = Format[BigInt](
+  implicit private val bigIntFormat : Format[BigInt] = Format(
     Reads {
       case JsString(encoded) => JsSuccess(BigInt(Base64.getUrlDecoder.decode(encoded)))
       case _                 => JsError("BigInt value was not a base64url string")
@@ -48,7 +48,7 @@ trait JwkJsonSupport {
   def rsaJwkWrites =
     Json.writes[RsaPublicKey].transform((js: JsObject) => js + ("kty", JsString("RSA")))
 
-  implicit def indexedBytesFormat = Format[IndexedSeq[Byte]](
+  implicit def indexedBytesFormat : Format[IndexedSeq[Byte]] = Format(
     Reads {
       case JsString(encoded) => JsSuccess(Base64.getUrlDecoder.decode(encoded).toIndexedSeq)
       case _                 => JsError("Binary value was not a base64url string")

@@ -11,9 +11,9 @@ val devInfo = Developer(
   Some("https://github.com/blackdoor")
 )
 
-val `2.12` = "2.12.15"
-val `2.13` = "2.13.7"
-val `3`    = "3.1.0"
+val `2.12` = "2.12.21"
+val `2.13` = "2.13.18"
+val `3`    = "3.3.7"
 
 trait BaseModule extends CrossScalaModule {
   def scalacOptions = Seq("-Xfatal-warnings", "-feature", "-unchecked", "-deprecation")
@@ -107,7 +107,6 @@ object json extends Module {
       with PublishModule with Cross.Module[String] {
     def crossScalaVersion = crossValue
     def jsonModuleName = "ninny"
-    override def scalacOptions = super.scalacOptions().filterNot(_ == "-Xfatal-warnings")
 
     def ivyDeps    = Agg(mvn"tk.nrktkt::ninny:0.7.3")
     def moduleDeps = List(jose(crossScalaVersion))

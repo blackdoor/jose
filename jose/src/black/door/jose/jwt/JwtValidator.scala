@@ -36,14 +36,19 @@ object JwtValidator {
     maybeIat.map(iat => s"It was issued at $iat.").getOrElse("")
 
   def defaultValidator(clock: Clock = Clock.systemDefaultZone) = {
-    val now = Instant.now(clock)
-    JwtValidator.fromSync[Any] {
-      case Jwt(_, claims) if claims.exp.exists(_.isBefore(now)) =>
-        s"Token expired at ${claims.exp.get}.${iatMessage(claims.iat)} It is now $now."
-      case Jwt(_, claims) if claims.nbf.exists(_.isAfter(now)) =>
-        s"Token will not be valid until ${claims.nbf.getOrElse("fail")}.${iatMessage(claims.iat)} It is now $now."
-      case Jwt(_, claims) if claims.iat.exists(iat => claims.exp.exists(_.isBefore(iat))) =>
-        "Token was never valid, it expired before it was issued"
+    JwtValidator.fromSyncLifted[Any] { jwt =>
+      val now = Instant.now(clock)
+
+      jwt match {
+        case Jwt(_, claims) if claims.exp.exists(_.isBefore(now)) =>
+          Some(s"Token expired at ${claims.exp.get}.${iatMessage(claims.iat)} It is now $now.")
+        case Jwt(_, claims) if claims.nbf.exists(_.isAfter(now)) =>
+          Some(s"Token will not be valid until ${claims.nbf.getOrElse("fail")}.${iatMessage(claims.iat)} It is now $now.")
+        case Jwt(_, claims) if claims.iat.exists(iat => claims.exp.exists(_.isBefore(iat))) =>
+          Some("Token was never valid, it expired before it was issued")
+        case _ =>
+          None
+      }
     }
   }
 

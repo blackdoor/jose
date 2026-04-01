@@ -108,7 +108,7 @@ object json extends Module {
     def crossScalaVersion = crossValue
     def jsonModuleName = "ninny"
 
-    def ivyDeps    = Agg(mvn"tk.nrktkt::ninny:0.7.3")
+    def ivyDeps    = Agg(mvn"tk.nrktkt::ninny:0.9.3")
     def moduleDeps = List(jose(crossScalaVersion))
   }
 

@@ -69,7 +69,7 @@ trait JwkJsonSupport {
       case key: P256KeyPair   => key.toSomeJson
       case key: P256PublicKey => key.toSomeJson
       case _                  => ???
-    }) ++ obj("kty" -> "EC", "crv" -> "P-256")
+    }) ++ obj("kty" ~> "EC", "crv" ~> "P-256")
 
   implicit val rsaJwkToJson: ToSomeJsonObject[RsaPublicKey] =
     ToJson.auto[RsaPublicKey].toSome(_) + ("kty" -> "RSA")

@@ -12,7 +12,7 @@ class NinnyJsonJwtSpec extends JwtSpec with JsonSupport {
 
   implicit val customClaimsToJsonObject: ToSomeJsonObject[MyCustomClaimsClass] =
     ToJson.auto[MyCustomClaimsClass].toSome(_)
-  implicit val customClaimsFromJson = FromJson.auto[MyCustomClaimsClass]
+  implicit val customClaimsFromJson: FromJson[MyCustomClaimsClass] = FromJson.auto
   val payloadCustomDeserializer = implicitly[ByteDeserializer[Claims[MyCustomClaimsClass]]]
   val payloadCustomSerializer   = implicitly[ByteSerializer[Claims[MyCustomClaimsClass]]]
 }

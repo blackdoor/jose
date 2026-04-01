@@ -3,7 +3,7 @@ package black.door.jose.docs
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import black.door.jose.json.ninny.JsonSupport._
-import io.github.kag0.ninny.Json
+import nrktkt.ninny.Json
 
 object SampleCode extends App {
 
@@ -39,7 +39,7 @@ errorOrJwt.right.get.claims.sub // Some(my user)
 
   {
     import black.door.jose.jwk._
-    import io.github.kag0.ninny.Auto._
+    import nrktkt.ninny.Auto._
     case class MyCustomClaimsClass(isAdmin: Boolean)
     val es256Key = Json
       .parse(

@@ -7,7 +7,7 @@ import black.door.jose.jwk.RsaPublicKey
 
 sealed case class RSAlg(hashBits: Int) extends SignatureAlgorithm {
   val alg          = s"RS$hashBits"
-  val jcaSignature = Signature.getInstance(s"SHA${hashBits}withRSA")
+  def jcaSignature = Signature.getInstance(s"SHA${hashBits}withRSA")
 
   val validate = {
     case (key: RsaPublicKey, header, signingInput, signature) if header.alg == alg =>

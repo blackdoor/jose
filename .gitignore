@@ -102,3 +102,6 @@ fabric.properties
 .metals
 .vscode
 .coursier
+.bsp
+
+.DS_Store
